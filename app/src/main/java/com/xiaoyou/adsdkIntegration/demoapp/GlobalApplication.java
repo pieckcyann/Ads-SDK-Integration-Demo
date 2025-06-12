@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+// 将这里的max的sdk的初始化封装一下，因为我还要同时初始化其他平台（例如topon）的sdk
 public class GlobalApplication
         extends Application {
     // If you want to test your own AppLovin SDK key, change the value here and update the package name in the build.gradle

@@ -12,9 +12,9 @@ import com.applovin.sdk.AppLovinSdk;
 import com.xiaoyou.adsdkIntegration.demoapp.ads.max.AppOpenAdActivity;
 import com.xiaoyou.adsdkIntegration.demoapp.ads.max.InterstitialAdActivity;
 import com.xiaoyou.adsdkIntegration.demoapp.ads.max.RewardedAdActivity;
-import com.xiaoyou.adsdkIntegration.demoapp.ads.max.banner.BannerAdActivity;
-import com.xiaoyou.adsdkIntegration.demoapp.ads.max.mrecs.MrecAdActivity;
-import com.xiaoyou.adsdkIntegration.demoapp.ads.max.nativead.NativeAdActivity;
+import com.xiaoyou.adsdkIntegration.demoapp.ads.max.banner.BannerAdActivityMultiLevel;
+import com.xiaoyou.adsdkIntegration.demoapp.ads.max.mrecs.MrecAdActivityMultiLevel;
+import com.xiaoyou.adsdkIntegration.demoapp.ads.max.nativead.NativeAdActivityMultiLevel;
 import com.xiaoyou.adsdkIntegration.demoapp.data.MainMenuItem;
 import com.xiaoyou.adsdkIntegration.demoapp.ui.MainExpandableListAdapter;
 
@@ -69,12 +69,11 @@ public class MainActivity
         maxChildren.add(new MainMenuItem("Interstitials", new Intent(this, InterstitialAdActivity.class)));
         maxChildren.add(new MainMenuItem("App Open Ads", new Intent(this, AppOpenAdActivity.class)));
         maxChildren.add(new MainMenuItem("Rewarded", new Intent(this, RewardedAdActivity.class)));
-        maxChildren.add(new MainMenuItem("Banners", new Intent(this, BannerAdActivity.class)));
-        maxChildren.add(new MainMenuItem("MRECs", new Intent(this, MrecAdActivity.class)));
-        maxChildren.add(new MainMenuItem("Native Ads", new Intent(this, NativeAdActivity.class)));
+        maxChildren.add(new MainMenuItem("Banners", new Intent(this, BannerAdActivityMultiLevel.class)));
+        maxChildren.add(new MainMenuItem("MRECs", new Intent(this, MrecAdActivityMultiLevel.class)));
+        maxChildren.add(new MainMenuItem("Native Ads", new Intent(this, NativeAdActivityMultiLevel.class)));
 
         childMap.put("MAX", maxChildren);
-
 
         // 给 MAX 组添加子项
         List<MainMenuItem> topOnChildren = new ArrayList<>();

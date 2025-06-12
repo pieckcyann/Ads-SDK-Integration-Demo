@@ -3,7 +3,11 @@
 /local.properties
 /.idea
 .DS_Store
-/build
 /captures
 .externalNativeBuild
 .cxx
+
+# 忽略所有 build 文件夹
+/build/
+/*/build/
+/**/build/

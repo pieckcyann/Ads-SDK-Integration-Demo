@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="10dp"
-        android:text="Ads Sdk Integration Demo App"
+        android:text="Splash Activity"
         android:textColor="@android:color/white"
         android:textSize="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
