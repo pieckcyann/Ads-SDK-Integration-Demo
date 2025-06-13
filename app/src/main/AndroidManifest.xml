@@ -12,6 +12,9 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
+    <!--非中国区SDK必要权限-->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
+
 
     <application
         android:name="com.xiaoyou.adsdkIntegration.demoapp.GlobalApplication"
@@ -22,13 +25,13 @@
         android:theme="@style/AppTheme"
         tools:targetApi="24">
 
+        <!-- Android 9 以上适配 -->
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
-        <!-- source file: china/network_sdk/baidu/9.391.2/AndroidManifest.xml -->
 
-        <!-- source file: china/network_sdk/csj/6.8.2.0/AndroidManifest.xml -->
-        <provider
+        <!-- 中国区必要 -->
+        <!--<provider
             android:name="com.bytedance.sdk.openadsdk.multipro.TTMultiProvider"
             android:authorities="${applicationId}.TTMultiProvider"
             android:exported="false" />
@@ -41,7 +44,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/anythink_bk_tt_file_path" />
         </provider>
-        <!-- source file: china/network_sdk/gdt/4.640.1510/AndroidManifest.xml -->
+        &lt;!&ndash; source file: china/network_sdk/gdt/4.640.1510/AndroidManifest.xml &ndash;&gt;
 
         <provider
             android:name="com.qq.e.comm.GDTFileProvider"
@@ -51,7 +54,7 @@
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/anythink_bk_gdt_file_path" />
-        </provider>
+        </provider>-->
 
         <activity
             android:name="com.xiaoyou.adsdkIntegration.demoapp.SplashActivity"
@@ -70,67 +73,18 @@
         <activity
             android:name="com.xiaoyou.adsdkIntegration.demoapp.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <!--  -->
         <activity
-            android:name="com.xiaoyou.adsdkIntegration.demoapp.ads.max.InterstitialAdActivity"
+            android:name=".ui.TopOnActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName="com.xiaoyou.adsdkIntegration.demoapp.MainActivity" />
+        <!--  -->
+        <activity
+            android:name=".ui.KwaiActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.xiaoyou.adsdkIntegration.demoapp.MainActivity" />
         <activity
-            android:name="com.xiaoyou.adsdkIntegration.demoapp.ads.max.AppOpenAdActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:parentActivityName="com.xiaoyou.adsdkIntegration.demoapp.MainActivity" />
-        <activity
-            android:name="com.xiaoyou.adsdkIntegration.demoapp.ads.max.RewardedAdActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:parentActivityName="com.xiaoyou.adsdkIntegration.demoapp.MainActivity" />
-        <activity
-            android:name="com.xiaoyou.adsdkIntegration.demoapp.ads.max.banner.BannerAdActivityMultiLevel"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:label="Banners"
-            android:parentActivityName="com.xiaoyou.adsdkIntegration.demoapp.MainActivity" />
-        <activity
-            android:name="com.xiaoyou.adsdkIntegration.demoapp.ads.max.banner.ProgrammaticBannerAdActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:parentActivityName="com.xiaoyou.adsdkIntegration.demoapp.MainActivity" />
-        <activity
-            android:name="com.xiaoyou.adsdkIntegration.demoapp.ads.max.banner.LayoutEditorBannerAdActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:parentActivityName="com.xiaoyou.adsdkIntegration.demoapp.MainActivity" />
-        <activity
-            android:name="com.xiaoyou.adsdkIntegration.demoapp.ads.max.mrecs.MrecAdActivityMultiLevel"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:label="MRECs"
-            android:parentActivityName="com.xiaoyou.adsdkIntegration.demoapp.MainActivity" />
-        <activity
-            android:name="com.xiaoyou.adsdkIntegration.demoapp.ads.max.mrecs.LayoutEditorMrecAdActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:parentActivityName="com.xiaoyou.adsdkIntegration.demoapp.MainActivity" />
-        <activity
-            android:name="com.xiaoyou.adsdkIntegration.demoapp.ads.max.mrecs.ProgrammaticMrecAdActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:parentActivityName="com.xiaoyou.adsdkIntegration.demoapp.MainActivity" />
-        <activity
-            android:name="com.xiaoyou.adsdkIntegration.demoapp.ads.max.mrecs.RecyclerViewMrecAdActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:parentActivityName="com.xiaoyou.adsdkIntegration.demoapp.MainActivity" />
-        <activity
-            android:name="com.xiaoyou.adsdkIntegration.demoapp.ads.max.nativead.NativeAdActivityMultiLevel"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:label="Natives"
-            android:parentActivityName="com.xiaoyou.adsdkIntegration.demoapp.MainActivity" />
-        <activity
-            android:name="com.xiaoyou.adsdkIntegration.demoapp.ads.max.nativead.TemplateNativeAdActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:parentActivityName="com.xiaoyou.adsdkIntegration.demoapp.MainActivity" />
-        <activity
-            android:name="com.xiaoyou.adsdkIntegration.demoapp.ads.max.nativead.ManualNativeAdActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:parentActivityName="com.xiaoyou.adsdkIntegration.demoapp.MainActivity" />
-        <activity
-            android:name="com.xiaoyou.adsdkIntegration.demoapp.ads.max.nativead.ManualNativeLateBindingAdActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:parentActivityName="com.xiaoyou.adsdkIntegration.demoapp.MainActivity" />
-        <activity
-            android:name="com.xiaoyou.adsdkIntegration.demoapp.ads.max.nativead.RecyclerViewNativeAdActivity"
+            android:name=".ui.MaxActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.xiaoyou.adsdkIntegration.demoapp.MainActivity" />
     </application>

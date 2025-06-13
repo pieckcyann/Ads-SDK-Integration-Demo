@@ -1,34 +1,28 @@
 package com.xiaoyou.adsdkIntegration.demoapp;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.ExpandableListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.applovin.sdk.AppLovinSdk;
-import com.xiaoyou.adsdkIntegration.demoapp.ads.max.AppOpenAdActivity;
-import com.xiaoyou.adsdkIntegration.demoapp.ads.max.InterstitialAdActivity;
-import com.xiaoyou.adsdkIntegration.demoapp.ads.max.RewardedAdActivity;
-import com.xiaoyou.adsdkIntegration.demoapp.ads.max.banner.BannerAdActivityMultiLevel;
-import com.xiaoyou.adsdkIntegration.demoapp.ads.max.mrecs.MrecAdActivityMultiLevel;
-import com.xiaoyou.adsdkIntegration.demoapp.ads.max.nativead.NativeAdActivityMultiLevel;
-import com.xiaoyou.adsdkIntegration.demoapp.data.MainMenuItem;
-import com.xiaoyou.adsdkIntegration.demoapp.ui.MainExpandableListAdapter;
+import com.xiaoyou.adsdkIntegration.demoapp.data.IntentMenuItem;
+import com.xiaoyou.adsdkIntegration.demoapp.ui.KwaiActivity;
+import com.xiaoyou.adsdkIntegration.demoapp.ui.MaxActivity;
+import com.xiaoyou.adsdkIntegration.demoapp.ui.TopOnActivity;
+import com.xiaoyou.adsdkIntegration.demoapp.ui.base.BaseRecyclerViewAdapter;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * The main {@link android.app.Activity} of this app.
  */
 public class MainActivity
         extends AppCompatActivity
-        implements MainExpandableListAdapter.OnMainListItemClickListener {
+        implements BaseRecyclerViewAdapter.OnMainListItemClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,60 +33,26 @@ public class MainActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        final MainExpandableListAdapter adapter = new MainExpandableListAdapter(generateMainListItems(), this, this);
-        final ExpandableListView expandableListView = findViewById(R.id.expandable_list_view);
-        expandableListView.setAdapter(adapter);
+        final BaseRecyclerViewAdapter adapter = new BaseRecyclerViewAdapter(generateMainListItems(), this, this);
+        final RecyclerView recyclerView = findViewById(R.id.main_recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this)); // ★
+        recyclerView.setAdapter(adapter);
 
-        // Check that SDK key is present in Android Manifest
-        checkSdkKey();
     }
 
-    private void checkSdkKey() {
-        final String sdkKey = AppLovinSdk.getInstance(getApplicationContext()).getSdkKey();
-        if ("YOUR_SDK_KEY".equalsIgnoreCase(sdkKey)) {
-            new AlertDialog.Builder(this)
-                    .setTitle("ERROR")
-                    .setMessage("Please update your sdk key in the manifest file.")
-                    .setCancelable(false)
-                    .setNeutralButton("OK", null)
-                    .show();
-        }
-    }
 
     // 创建下拉列表
-    private Map<String, List<MainMenuItem>> generateMainListItems() {
-        // 标题 -> 多个广告类型
-        Map<String, List<MainMenuItem>> childMap = new HashMap<>();
-
-        // 给 MAX 组添加子项
-        List<MainMenuItem> maxChildren = new ArrayList<>();
-        maxChildren.add(new MainMenuItem("Interstitials", new Intent(this, InterstitialAdActivity.class)));
-        maxChildren.add(new MainMenuItem("App Open Ads", new Intent(this, AppOpenAdActivity.class)));
-        maxChildren.add(new MainMenuItem("Rewarded", new Intent(this, RewardedAdActivity.class)));
-        maxChildren.add(new MainMenuItem("Banners", new Intent(this, BannerAdActivityMultiLevel.class)));
-        maxChildren.add(new MainMenuItem("MRECs", new Intent(this, MrecAdActivityMultiLevel.class)));
-        maxChildren.add(new MainMenuItem("Native Ads", new Intent(this, NativeAdActivityMultiLevel.class)));
-
-        childMap.put("MAX", maxChildren);
-
-        // 给 MAX 组添加子项
-        List<MainMenuItem> topOnChildren = new ArrayList<>();
-        topOnChildren.add(new MainMenuItem("Interstitials", new Intent(this, InterstitialAdActivity.class)));
-        topOnChildren.add(new MainMenuItem("Interstitials", new Intent(this, InterstitialAdActivity.class)));
-
-        childMap.put("TopOn", topOnChildren);
-
-
-        return childMap;
+    private List<IntentMenuItem> generateMainListItems() {
+        List<IntentMenuItem> mainItem = new ArrayList<>();
+        mainItem.add(new IntentMenuItem("MAX", new Intent(this, MaxActivity.class)));
+        mainItem.add(new IntentMenuItem("TopOn", new Intent(this, TopOnActivity.class)));
+        mainItem.add(new IntentMenuItem("Kwai", new Intent(this, KwaiActivity.class)));
+        mainItem.add(new IntentMenuItem("Bingo", new Intent(this, MaxActivity.class)));
+        return mainItem;
     }
 
     @Override
-    public void onItemClicked(MainMenuItem item) {
-        if (item.getIntent() != null) {
-            startActivity(item.getIntent());
-        } else if (item.getRunnable() != null) {
-            item.getRunnable().run();
-        }
+    public void onItemClicked(IntentMenuItem item) {
+        startActivity(item.getIntent());
     }
-
 }
