@@ -2,6 +2,10 @@ package com.xiaoyou.adsdkIntegration.demoapp.data.kwai;
 
 import android.content.Context;
 
+/**
+ * config对象用于存储各种回调实例，比如广告加载的成功或者失败，以及广告发生的各种行为。同时是构建广告加载器Loader的必传对象。
+ * <a href="https://docs.qingque.cn/d/home/eZQB8993uGF9aJ0W06Tp-DUXd#section=h.1quofsnqmn5y">原文链接</a>
+ */
 public class Config {
 
     private static Config instance;
@@ -11,6 +15,7 @@ public class Config {
         this.context = context.getApplicationContext();
     }
 
+    // 单例模式
     public static Config getInstance(Context context) {
         if (instance == null) {
             synchronized (Config.class) {
@@ -23,11 +28,18 @@ public class Config {
     }
 
     /**
-     * 获取激励广告的 tagId
+     * 获取激励广告 tagId
      */
     public String getRewardTagId() {
-        // 这里可以从资源文件读取，或者写死测试ID
         return "8999996001";
+    }
+
+
+    /**
+     * 获取插屏告 tagId
+     */
+    public String getInterstitialTagId() {
+        return "8999996002";
     }
 
     /**

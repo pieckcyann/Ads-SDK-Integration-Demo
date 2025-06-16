@@ -34,6 +34,7 @@ public class MAX_RewardedAdLoader implements AdLoader, MaxRewardedAdListener, Ma
         rewardedAd = MaxRewardedAd.getInstance("29e66ea95642a2e1", this.context);
         rewardedAd.setListener(this);
         rewardedAd.setRevenueListener(this);
+        rewardedAd.loadAd();
     }
 
     @Override
@@ -46,7 +47,7 @@ public class MAX_RewardedAdLoader implements AdLoader, MaxRewardedAdListener, Ma
         if (rewardedAd.isReady()) {
             rewardedAd.showAd();
         } else {
-            Toast.makeText(context, "激励广告还没准备好", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "MAX 激励广告还没准备好", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -66,7 +67,7 @@ public class MAX_RewardedAdLoader implements AdLoader, MaxRewardedAdListener, Ma
     @Override
     public void onAdLoaded(@NonNull final MaxAd ad) {
         // Rewarded ad is ready to be shown. rewardedAd.isReady() will now return 'true'
-        Toast.makeText(context, "激励广告加载完成", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "MAX 激励广告加载完成", Toast.LENGTH_SHORT).show();
 
         // Reset retry attempt
         retryAttempt = 0;
@@ -75,7 +76,7 @@ public class MAX_RewardedAdLoader implements AdLoader, MaxRewardedAdListener, Ma
     @Override
     public void onAdLoadFailed(@NonNull final String adUnitId, @NonNull final MaxError maxError) {
         // Rewarded ad failed to load. We recommend retrying with exponentially higher delays up to a maximum delay (in this case 64 seconds).
-        Toast.makeText(context, "激励广告加载失败：" + maxError.getMessage(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "MAX 激励广告加载失败：" + maxError.getMessage(), Toast.LENGTH_SHORT).show();
 
         retryAttempt++;
         long delayMillis = TimeUnit.SECONDS.toMillis((long) Math.pow(2, Math.min(6, retryAttempt)));
@@ -109,7 +110,7 @@ public class MAX_RewardedAdLoader implements AdLoader, MaxRewardedAdListener, Ma
     @Override
     public void onAdHidden(@NonNull final MaxAd ad) {
         // Rewarded ad is hidden. Pre-load the the next ad
-        rewardedAd.loadAd();
+        // rewardedAd.loadAd();
     }
 
     @Override

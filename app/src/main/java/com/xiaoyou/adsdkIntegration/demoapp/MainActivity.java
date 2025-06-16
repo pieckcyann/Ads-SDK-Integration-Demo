@@ -9,8 +9,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.xiaoyou.adsdkIntegration.demoapp.data.IntentMenuItem;
+import com.xiaoyou.adsdkIntegration.demoapp.ui.BIGOActivity;
 import com.xiaoyou.adsdkIntegration.demoapp.ui.KwaiActivity;
-import com.xiaoyou.adsdkIntegration.demoapp.ui.MaxActivity;
+import com.xiaoyou.adsdkIntegration.demoapp.ui.MAXActivity;
 import com.xiaoyou.adsdkIntegration.demoapp.ui.TopOnActivity;
 import com.xiaoyou.adsdkIntegration.demoapp.ui.base.BaseRecyclerViewAdapter;
 
@@ -41,13 +42,13 @@ public class MainActivity
     }
 
 
-    // 创建下拉列表
+    // 创建各个平台的 Activity
     private List<IntentMenuItem> generateMainListItems() {
         List<IntentMenuItem> mainItem = new ArrayList<>();
-        mainItem.add(new IntentMenuItem("MAX", new Intent(this, MaxActivity.class)));
+        mainItem.add(new IntentMenuItem("MAX", new Intent(this, MAXActivity.class)));
         mainItem.add(new IntentMenuItem("TopOn", new Intent(this, TopOnActivity.class)));
         mainItem.add(new IntentMenuItem("Kwai", new Intent(this, KwaiActivity.class)));
-        mainItem.add(new IntentMenuItem("Bingo", new Intent(this, MaxActivity.class)));
+        mainItem.add(new IntentMenuItem("Bigo", new Intent(this, BIGOActivity.class)));
         return mainItem;
     }
 

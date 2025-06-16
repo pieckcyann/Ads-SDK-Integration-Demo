@@ -13,7 +13,8 @@ import com.xiaoyou.adsdkIntegration.demoapp.data.AdLoader;
 
 public class TopOn_AppOpenAdLoader implements AdLoader {
 
-    private final String placementId = "n683fba67f0cb4";
+    // private final String placementId = "n683fba67f0cb4";
+    private final String placementId = "xxxxxxxxxxxxxxxxxx";
     private final Activity activity;
     private ATInterstitial appOpenAd;
 
@@ -75,9 +76,9 @@ public class TopOn_AppOpenAdLoader implements AdLoader {
 
     @Override
     public void loadAd() {
-        if (appOpenAd == null) {
-            appOpenAd = new ATInterstitial(activity, placementId);
-        }
+        // if (appOpenAd == null) {
+        appOpenAd = new ATInterstitial(activity, placementId);
+        // }
         appOpenAd.load();
     }
 

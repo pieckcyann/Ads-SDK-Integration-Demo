@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.xiaoyou.adsdkIntegration.demoapp.R;
+import com.xiaoyou.adsdkIntegration.demoapp.ads.kwai.Kwai_InterstitialLoader;
 import com.xiaoyou.adsdkIntegration.demoapp.ads.kwai.Kwai_RewardedAdLoader;
 import com.xiaoyou.adsdkIntegration.demoapp.data.AdLoader;
 import com.xiaoyou.adsdkIntegration.demoapp.data.AdMenuItem;
@@ -33,9 +34,9 @@ public class KwaiActivity extends AppCompatActivity implements BaseGridCardAdapt
     private List<AdMenuItem> generateTopOnAdListItems() {
         List<AdMenuItem> kwaiAdItems = new ArrayList<>();
 
-        // kwaiAdItems.add(new AdMenuItem("Interstitials", new TopOn_InterstitialLoader(this)));
-        // kwaiAdItems.add(new AdMenuItem("App Open Ads", new TopOn_AppOpenAdLoader(this)));
         kwaiAdItems.add(new AdMenuItem("Rewarded", new Kwai_RewardedAdLoader(this)));
+        kwaiAdItems.add(new AdMenuItem("Interstitials", new Kwai_InterstitialLoader(this)));
+        // kwaiAdItems.add(new AdMenuItem("App Open Ads", new Kwai_AppOpenAdLoader(this)));
 
         return kwaiAdItems;
     }

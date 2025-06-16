@@ -2,14 +2,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!--TaKu SDK通用 必要权限-->
+    <!--SDK通用 必要权限-->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <!--中国区SDK必要权限-->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32"
+        tools:ignore="ScopedStorage" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <!--非中国区SDK必要权限-->
@@ -73,19 +78,22 @@
         <activity
             android:name="com.xiaoyou.adsdkIntegration.demoapp.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <!--  -->
         <activity
             android:name=".ui.TopOnActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.xiaoyou.adsdkIntegration.demoapp.MainActivity" />
-        <!--  -->
         <activity
             android:name=".ui.KwaiActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.xiaoyou.adsdkIntegration.demoapp.MainActivity" />
         <activity
-            android:name=".ui.MaxActivity"
+            android:name=".ui.MAXActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.xiaoyou.adsdkIntegration.demoapp.MainActivity" />
+        <activity
+            android:name=".ui.BIGOActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName="com.xiaoyou.adsdkIntegration.demoapp.MainActivity" />
+
     </application>
 </manifest>

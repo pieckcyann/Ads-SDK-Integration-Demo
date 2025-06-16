@@ -9,8 +9,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.applovin.sdk.AppLovinSdk;
 import com.xiaoyou.adsdkIntegration.demoapp.R;
-import com.xiaoyou.adsdkIntegration.demoapp.ads.max.MAX_AppOpenAdLoader;
-import com.xiaoyou.adsdkIntegration.demoapp.ads.max.MAX_BannerAdLoader;
 import com.xiaoyou.adsdkIntegration.demoapp.ads.max.MAX_InterstitialAdLoader;
 import com.xiaoyou.adsdkIntegration.demoapp.ads.max.MAX_RewardedAdLoader;
 import com.xiaoyou.adsdkIntegration.demoapp.data.AdLoader;
@@ -20,7 +18,7 @@ import com.xiaoyou.adsdkIntegration.demoapp.ui.base.BaseGridCardAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MaxActivity extends AppCompatActivity implements BaseGridCardAdapter.OnAdActionListener {
+public class MAXActivity extends AppCompatActivity implements BaseGridCardAdapter.OnAdActionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +40,9 @@ public class MaxActivity extends AppCompatActivity implements BaseGridCardAdapte
         List<AdMenuItem> maxAdItems = new ArrayList<>();
 
         maxAdItems.add(new AdMenuItem("Interstitials", new MAX_InterstitialAdLoader(this)));
-        maxAdItems.add(new AdMenuItem("App Open Ads", new MAX_AppOpenAdLoader(this)));
         maxAdItems.add(new AdMenuItem("Rewarded", new MAX_RewardedAdLoader(this)));
-        maxAdItems.add(new AdMenuItem("Banners", new MAX_BannerAdLoader(this)));
+        // maxAdItems.add(new AdMenuItem("App Open Ads", new MAX_AppOpenAdLoader(this)));
+        // maxAdItems.add(new AdMenuItem("Banners", new MAX_BannerAdLoader(this)));
 
         return maxAdItems;
     }

@@ -25,7 +25,7 @@ public class SplashActivity extends AppCompatActivity {
 
             // 跳转回主页面
             startActivity(intent);
-        }, 2000); // 延迟 1 秒
+        }, 1000); // 延迟 1 秒
 
         // // 使用 AppLovin 工具类，在主线程延迟 2 秒后跳转到 MainActivity
         // AppLovinSdkUtils.runOnUiThreadDelayed(() -> {

@@ -24,10 +24,17 @@ import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import sg.bigo.ads.BigoAdSdk;
+import sg.bigo.ads.api.AdConfig;
+
 public class GlobalApplication extends Application {
     private static final String MAX_SDK_KEY = "9uHgeBwag3NXva9MC23ToO3q11Ve59bF1uwg4qGltdGmCQ7OSByFZ_3b1ZF7krMlkHQo5gXzIokVDsvg1rwbr-";
-    private static final String TAKU_APP_KEY = "a119b998c7158dde7ad7cc134365c7824";
-    private static final String TAKU_APP_ID = "h67d39ef1bbfe7";
+    private static final String TOPON_APP_ID = "h67d39ef1bbfe7";
+    private static final String TOPON_APP_KEY = "a119b998c7158dde7ad7cc134365c7824";
+    private static final String KWAI_APP_ID = "899999";
+    private static final String KWAI_TOKEN = "EaCw0AipSYyvf3E7";
+    private static final String BIGO_APP_ID_01 = "10182906"; // 竖版广告
+    private static final String BIGO_APP_ID_02 = "10247107"; // 横版广告
 
     @Override
     public void onCreate() {
@@ -37,7 +44,7 @@ public class GlobalApplication extends Application {
         initAppLovinMaxSdk();
         initTopOnSdk();
         initKwaiSdk(this);
-        // TODO: initBigoSdk();
+        initBigoSdk();
     }
 
     // 初始化 AppLovin MAX SDK 和 Adjust SDK
@@ -69,16 +76,15 @@ public class GlobalApplication extends Application {
     }
 
     private void initTopOnSdk() {
-        ATSDK.init(getApplicationContext(), TAKU_APP_ID, TAKU_APP_KEY); // 初始化 SDK
+        ATSDK.init(getApplicationContext(), TOPON_APP_ID, TOPON_APP_KEY); // 初始化 SDK
         ATSDK.start();    // v6.2.95+，针对国内 SDK，调用 start 启动 SDK。海外 SDK 无调用
         ATSDK.setNetworkLogDebug(true);
     }
 
     private void initKwaiSdk(Context appContext) {
         KwaiAdSDK.init(appContext, new SdkConfig.Builder()
-                .appId("899999")  // 必填，请替换为你申请的 appId
-                .token("EaCw0AipSYyvf3E7")   // 必填，请替换为你申请的 token
-                .appStoreUrl("https://play.google.com/store/apps/details?id=com.test.video")
+                .appId(KWAI_APP_ID)  // 必填，请替换为你申请的 appId
+                .token(KWAI_TOKEN)   // 必填，请替换为你申请的 token
                 .debug(false) // 接入调试时设为 true，正式版务必为 false
                 .setInitCallback(new KwaiInitCallback() {
                     @Override
@@ -96,6 +102,26 @@ public class GlobalApplication extends Application {
                 .build());
     }
 
+    private void initBigoSdk() {
+        AdConfig config = new AdConfig.Builder()
+                .setAppId(BIGO_APP_ID_01)
+                // .setDebug(BuildConfig.DEBUG)
+                // .setChannel("<your-app-channel>")
+                // .setAge("<your-app-user-age>")
+                // .setGender(AdConfig.GENDER_MALE)
+                // .setActivatedTime("<your-app-activated-timestamp>")
+                .build();
+
+        BigoAdSdk.initialize(this, config, new BigoAdSdk.InitListener() {
+            @Override
+            public void onInitialized() {
+                // You can request ads now!
+                Log.i("BigoAdSdk", "Init success.");
+                // Notify.notify("BigoAdSdk", GlobalApplication.this, "Init success.");
+            }
+        });
+    }
+
     public static final class AdjustLifecycleCallbacks implements ActivityLifecycleCallbacks {
         @Override
         public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle bundle) {
@@ -106,12 +132,12 @@ public class GlobalApplication extends Application {
         }
 
         @Override
-        public void onActivityResumed(Activity activity) {
+        public void onActivityResumed(@NonNull Activity activity) {
             Adjust.onResume();
         }
 
         @Override
-        public void onActivityPaused(Activity activity) {
+        public void onActivityPaused(@NonNull Activity activity) {
             Adjust.onPause();
         }
 

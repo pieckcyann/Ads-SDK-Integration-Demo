@@ -31,10 +31,15 @@ public class MAX_BannerAdLoader implements AdLoader, MaxAdViewAdListener, MaxAdR
 
     public MAX_BannerAdLoader(Context context) {
         this.context = context;
+        loadBannerAd();
     }
 
     @Override
     public void loadAd() {
+        loadBannerAd();
+    }
+
+    private void loadBannerAd() {
         adView = new MaxAdView("YOUR_AD_UNIT_ID", context);
 
         adView.setListener(this);
@@ -51,12 +56,13 @@ public class MAX_BannerAdLoader implements AdLoader, MaxAdViewAdListener, MaxAdR
 
         ViewGroup rootView = ((Activity) context).findViewById(android.R.id.content); // 视图根元素
         rootView.addView(adView);
+
+        adView.loadAd();
     }
 
     @Override
     public void showAd() {
-        adView.loadAd();
-        Toast.makeText(context, "已加载", Toast.LENGTH_SHORT).show();
+        loadBannerAd();
     }
 
     public void destroy() {
@@ -65,14 +71,17 @@ public class MAX_BannerAdLoader implements AdLoader, MaxAdViewAdListener, MaxAdR
     // 下面可选：监听回调
     @Override
     public void onAdLoaded(@NonNull MaxAd ad) {
+        Toast.makeText(context, "已加载", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onAdLoadFailed(@NonNull String adUnitId, @NonNull MaxError error) {
+        Toast.makeText(context, "onAdLoadFailed", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onAdDisplayFailed(@NonNull MaxAd maxAd, @NonNull MaxError maxError) {
+        Toast.makeText(context, "onAdDisplayFailed", Toast.LENGTH_SHORT).show();
 
     }
 

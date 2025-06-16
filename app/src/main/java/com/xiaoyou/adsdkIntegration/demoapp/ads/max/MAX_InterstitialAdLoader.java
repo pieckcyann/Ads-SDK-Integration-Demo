@@ -29,6 +29,7 @@ public class MAX_InterstitialAdLoader implements AdLoader, MaxAdListener, MaxAdR
         interstitialAd = new MaxInterstitialAd("4e3d8dc87fc3fb78", context);
         interstitialAd.setListener(this);
         interstitialAd.setRevenueListener(this);
+        interstitialAd.loadAd();
     }
 
     @Override
@@ -41,7 +42,7 @@ public class MAX_InterstitialAdLoader implements AdLoader, MaxAdListener, MaxAdR
         if (interstitialAd.isReady()) {
             interstitialAd.showAd();
         } else {
-            Toast.makeText(context, "插屏广告还没准备好", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "MAX 插屏广告还没准备好", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -54,13 +55,13 @@ public class MAX_InterstitialAdLoader implements AdLoader, MaxAdListener, MaxAdR
 
     @Override
     public void onAdLoaded(@NonNull MaxAd ad) {
-        Toast.makeText(context, "插屏广告加载完成", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "MAX 插屏广告加载完成", Toast.LENGTH_SHORT).show();
         retryAttempt = 0;
     }
 
     @Override
     public void onAdLoadFailed(@NonNull String adUnitId, @NonNull MaxError maxError) {
-        Toast.makeText(context, "插屏广告加载失败：" + maxError.getMessage(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "MAX 插屏广告加载失败：" + maxError.getMessage(), Toast.LENGTH_SHORT).show();
 
         retryAttempt++;
         long delayMillis = TimeUnit.SECONDS.toMillis((long) Math.pow(2, Math.min(6, retryAttempt)));
@@ -69,7 +70,7 @@ public class MAX_InterstitialAdLoader implements AdLoader, MaxAdListener, MaxAdR
 
     @Override
     public void onAdDisplayFailed(@NonNull MaxAd ad, @NonNull MaxError error) {
-        interstitialAd.loadAd();
+        // interstitialAd.loadAd();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.xiaoyou.adsdkIntegration.demoapp.ads.topon;
 
 import android.app.Activity;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.anythink.core.api.ATAdInfo;
@@ -13,15 +14,14 @@ public class TopOn_InterstitialLoader implements AdLoader {
 
     private final String placementId = "n683fba67f0cb4";
 
-    private final String scenarioId = "f684bd1076a154";
     private final Activity activity;
     private ATInterstitial interstitialAd;
 
     public TopOn_InterstitialLoader(Activity activity) {
         this.activity = activity;
         interstitialAd = new ATInterstitial(activity, placementId);
-        interstitialAd.load(); // 自动预加
         initAd();
+        interstitialAd.load(); // 自动预加载
     }
 
     private void initAd() {
@@ -65,7 +65,7 @@ public class TopOn_InterstitialLoader implements AdLoader {
             @Override
             public void onInterstitialAdVideoError(AdError adError) {
                 Toast.makeText(activity, "TopOn 插页广告视频加载失败" + adError.getFullErrorInfo(), Toast.LENGTH_SHORT).show();
-                System.out.println("TopOn 插页广告视频加载失败" + adError.getFullErrorInfo());
+                Log.e("TopOn", "TopOn 插页广告视频加载失败" + adError.getFullErrorInfo());
             }
         });
 

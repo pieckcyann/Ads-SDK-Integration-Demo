@@ -29,6 +29,8 @@ public class MAX_AppOpenAdLoader
         appOpenAd = new MaxAppOpenAd("YOUR_AD_UNIT_ID", this.context);
         appOpenAd.setListener(this);
         appOpenAd.setRevenueListener(this);
+        appOpenAd.loadAd();
+
     }
 
     @Override
@@ -41,7 +43,7 @@ public class MAX_AppOpenAdLoader
         if (appOpenAd.isReady()) {
             appOpenAd.showAd();
         } else {
-            Toast.makeText(context, "开屏广告还没准备好", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "MAX 开屏广告还没准备好", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -50,7 +52,7 @@ public class MAX_AppOpenAdLoader
     @Override
     public void onAdLoaded(@NonNull final MaxAd ad) {
         // App Open ad is ready to be shown. appOpenAd.isReady() will now return 'true'.
-        Toast.makeText(context, "开屏广告加载完成", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "MAX 开屏广告加载完成", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -60,7 +62,7 @@ public class MAX_AppOpenAdLoader
     @Override
     public void onAdDisplayFailed(@NonNull final MaxAd ad, @NonNull final MaxError error) {
         // App Open ad failed to display. We recommend loading the next ad.
-        appOpenAd.loadAd();
+        // appOpenAd.loadAd();
     }
 
     @Override
