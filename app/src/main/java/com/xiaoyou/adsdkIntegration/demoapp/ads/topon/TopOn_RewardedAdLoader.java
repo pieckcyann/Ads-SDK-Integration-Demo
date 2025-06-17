@@ -13,18 +13,18 @@ public class TopOn_RewardedAdLoader implements AdLoader {
 
     private final String placementId = "n683fba683e000";
     private final Activity activity;
-    private ATRewardVideoAd rewardedAd;
+    private ATRewardVideoAd mRewardVideoAd;
 
     public TopOn_RewardedAdLoader(Activity activity) {
         this.activity = activity;
-        rewardedAd = new ATRewardVideoAd(activity, placementId);
+        mRewardVideoAd = new ATRewardVideoAd(activity, placementId);
         initAd();
-        rewardedAd.load();
+        mRewardVideoAd.load();
     }
 
     private void initAd() {
 
-        rewardedAd.setAdListener(new ATRewardVideoListener() {
+        mRewardVideoAd.setAdListener(new ATRewardVideoListener() {
 
             @Override
             public void onRewardedVideoAdLoaded() {
@@ -33,12 +33,18 @@ public class TopOn_RewardedAdLoader implements AdLoader {
 
             @Override
             public void onRewardedVideoAdFailed(AdError adError) {
+                // 注意：禁止在此回调中执行广告的加载方法进行重试，否则会引起很多无用请求且可能会导致应用卡顿
+                // AdError，请参考 https://docs.toponad.com/#/zh-cn/android/android_doc/android_test?id=aderror
 
             }
 
             @Override
             public void onRewardedVideoAdPlayStart(ATAdInfo atAdInfo) {
+                // ATAdInfo可区分广告平台以及获取广告平台的广告位ID等
+                // 请参考 https://docs.toponad.com/#/zh-cn/android/android_doc/android_sdk_callback_access?id=callback_info
 
+                // 建议在此回调中调用load进行广告的加载，方便下一次广告的展示（不需要调用isAdReady()）
+                // mRewardVideoAd.load();
             }
 
             @Override
@@ -72,27 +78,27 @@ public class TopOn_RewardedAdLoader implements AdLoader {
 
     @Override
     public void loadAd() {
-        if (rewardedAd == null) {
-            rewardedAd = new ATRewardVideoAd(activity, placementId);
+        if (mRewardVideoAd == null) {
+            mRewardVideoAd = new ATRewardVideoAd(activity, placementId);
         }
-        rewardedAd.load();
+        mRewardVideoAd.load();
     }
 
     @Override
     public void showAd() {
-        if (rewardedAd != null) {
+        if (mRewardVideoAd != null) {
             // ATInterstitial.entryAdScenario(placementId, scenarioId);
-            if (rewardedAd.isAdReady()) {
+            if (mRewardVideoAd.isAdReady()) {
                 // interstitialAd.show(activity, scenarioId);
-                rewardedAd.show(activity);
+                mRewardVideoAd.show(activity);
             } else {
                 Toast.makeText(activity, "TopOn 激励广告还没准备好", Toast.LENGTH_SHORT).show();
-                rewardedAd = new ATRewardVideoAd(activity, placementId);
+                mRewardVideoAd = new ATRewardVideoAd(activity, placementId);
             }
         }
     }
 
     public boolean isAdReady() {
-        return rewardedAd != null && rewardedAd.isAdReady();
+        return mRewardVideoAd != null && mRewardVideoAd.isAdReady();
     }
 }

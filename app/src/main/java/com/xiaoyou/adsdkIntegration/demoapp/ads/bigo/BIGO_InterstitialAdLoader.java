@@ -71,7 +71,7 @@ public class BIGO_InterstitialAdLoader implements AdLoader {
                             @Override
                             public void onAdLoaded(@NonNull InterstitialAd interAd) {
                                 BIGO_InterstitialAdLoader.notify("BIGO 插屏广告加载成功");
-
+                                interAd.destroy();
                                 minterstitialAd = interAd;
                                 onInterstitialAdLoaded(minterstitialAd);
                             }
