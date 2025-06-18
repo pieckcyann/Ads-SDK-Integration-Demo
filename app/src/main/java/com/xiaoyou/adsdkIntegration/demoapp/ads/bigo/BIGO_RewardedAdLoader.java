@@ -19,7 +19,6 @@ public class BIGO_RewardedAdLoader implements AdLoader {
 
     private static final String TAG = "bigo_reward";
     private static Context context;
-    private final Activity activity;
     private RewardVideoAd rewardVideoAd;
 
     private RewardVideoAdRequest rewardVideoAdAdRequest;
@@ -27,7 +26,6 @@ public class BIGO_RewardedAdLoader implements AdLoader {
 
     public BIGO_RewardedAdLoader(Activity activity) {
         context = activity.getApplicationContext();
-        this.activity = activity;
         loadSplashAd();
     }
 

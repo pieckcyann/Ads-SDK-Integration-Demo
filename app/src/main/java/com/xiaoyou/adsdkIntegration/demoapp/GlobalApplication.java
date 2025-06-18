@@ -77,7 +77,7 @@ public class GlobalApplication extends Application {
 
     private void initTopOnSdk() {
         ATSDK.init(getApplicationContext(), TOPON_APP_ID, TOPON_APP_KEY); // 初始化 SDK
-        ATSDK.start();    // v6.2.95+，针对国内 SDK，调用 start 启动 SDK。海外 SDK 无调用
+        // ATSDK.start();    // v6.2.95+，针对国内 SDK，调用 start 启动 SDK。海外 SDK 无调用
         ATSDK.setNetworkLogDebug(true);
     }
 
