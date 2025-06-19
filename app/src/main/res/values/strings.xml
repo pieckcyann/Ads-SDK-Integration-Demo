@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Ad SDK Integration Demo App</string>
+    <string name="app_name">Sky Defense</string>
 
     <string name="activity_interstitial">Interstitial Ads</string>
     <string name="activity_app_open">App Open Ads</string>

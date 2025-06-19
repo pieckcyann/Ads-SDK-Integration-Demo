@@ -7,13 +7,14 @@ android {
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.mahjong.solitaire.tile.pair.match"
+        // applicationId "com.mahjong.solitaire.tile.pair.match"
         // applicationId "jp.co.goodroid.hyper.balljumper"
-        // mod
+        // applicationId "com.bubble.shooter.family"
+        applicationId "com.horus.sky.defense"
         minSdkVersion 24
         targetSdk 34
-        versionCode 10000
-        versionName "1.0"
+        versionCode 213
+        versionName "0.0.2.7"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -49,9 +50,9 @@ android {
         maven {
             url "https://cboost.jfrog.io/artifactory/chartboost-ads"
         }
-        maven {
-            url "https://cboost.jfrog.io/artifactory/chartboost-mediation"
-        }
+        maven { url "https://cboost.jfrog.io/artifactory/chartboost-mediation" }
+
+        maven { url "https://repo.pubmatic.com/artifactory/public-repos" }
     }
 
     buildTypes {
@@ -94,13 +95,8 @@ dependencies {
 
     implementation 'androidx.browser:browser:1.5.0'
 
-    /* Taku */
-    // Support (Necessary)
-    // api "com.android.support:appcompat-v7:28.0.0"
-    // api 'com.android.support:localbroadcastmanager:28.0.0'
 
     /* TopOn */
-
     // Anythink (Necessary)
     api "com.anythink.sdk:core-tpn:6.4.69"
     api "com.anythink.sdk:nativead-tpn:6.4.69"
@@ -170,34 +166,45 @@ dependencies {
     api "com.anythink.sdk:tramini-plugin-tpn:6.4.69"
 
     /* Kwai */
-
-    // 或者直接指定aar | Or specify aar
+    // 或者直接指定 aar
     implementation files('libs/kwai_adApi_release_v1.2.17_202503030244.aar')
     implementation files('libs/kwai_adImpl_release_v1.2.17_202503030244.aar')
-    // 或者以Maven的形式接入 | Or intergrate as Maven
-    // implementation "io.github.kwainetwork:adApi:最新版本version" | implementation "io.github.kwainetwork:adApi:the latest version"
-    // implementation "io.github.kwainetwork:adImpl:最新版本version" | implementation "io.github.kwainetwork:adImpl:the latest version"
 
-    // -------SDK运行的运行环境需要的依赖库 | Dependency repository required by the runtime environment on which the SDK runs
-    // SDK内部依赖如下，请确保添加 | The SDK has the following internal dependencies, ensure to add them
-    // 默认支持AndroidX | AndroidX is supported by default
+    // SDK运行的运行环境需要的依赖库
     implementation "androidx.media3:media3-exoplayer:1.0.0-alpha01"
     implementation "androidx.appcompat:appcompat:1.2.0"
     implementation "com.google.android.material:material:1.2.1"
     implementation "androidx.annotation:annotation:1.2.0"
     // 最低支持 kotlin1.4.10 ｜ Minimum support for kotlin 1.4.10
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.4.10"
-    // gaid 最低支持play-services-ads-identifier:18.0.1 ｜ gaid minimum support play-services-ads-identifier:18.0.1
+    // gaid 最低支持play-services-ads-identifier:18.0.1
     implementation "com.google.android.gms:play-services-ads-identifier:18.0.1"
 
 
     /* Bigo */
+    // implementation 'com.bigossp:bigo-ads:5.3.0'
 
-    implementation 'com.bigossp:bigo-ads:5.3.0'
+    /* MAX */
+    implementation "com.applovin:applovin-sdk:13.2.0"
 
-    if (isLocalAppLovinWorkspace) {
-        implementation(project(":Android-SDK"))
-    } else {
-        implementation("com.applovin:applovin-sdk:+@aar")
-    }
+    // MAX - BIGO
+    // implementation "com.applovin.mediation:bigoads-adapter:5.3.0.1"
+
+    // MAX - INMOBI
+    // implementation 'com.applovin.mediation:inmobi-adapter:10.8.3.0'
+    // implementation 'com.squareup.picasso:picasso:2.8'
+    // implementation 'androidx.recyclerview:recyclerview:1.1.0'
+
+    // implementation 'com.applovin.mediation:google-ad-manager-adapter:24.3.0.0'
+    // implementation 'com.applovin.mediation:google-adapter:24.3.0.0'
+
+    // implementation 'com.applovin.mediation:ironsource-adapter:8.8.0.0.1'
+
+    // implementation 'com.applovin.mediation:pubmatic-adapter:4.5.2.0'
+
+    implementation 'org.jsoup:jsoup:1.16.1'
+
+    // MAX - Fyber / DT
+    implementation 'com.applovin.mediation:fyber-adapter:+'
+
 }

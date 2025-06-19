@@ -21,14 +21,13 @@ import com.kwai.network.sdk.api.KwaiInitCallback;
 import com.kwai.network.sdk.api.SdkConfig;
 
 import java.util.Collections;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import sg.bigo.ads.BigoAdSdk;
 import sg.bigo.ads.api.AdConfig;
 
 public class GlobalApplication extends Application {
-    private static final String MAX_SDK_KEY = "9uHgeBwag3NXva9MC23ToO3q11Ve59bF1uwg4qGltdGmCQ7OSByFZ_3b1ZF7krMlkHQo5gXzIokVDsvg1rwbr-";
+    // private static final String MAX_SDK_KEY = "9uHgeBwag3NXva9MC23ToO3q11Ve59bF1uwg4qGltdGmCQ7OSByFZ_3b1ZF7krMlkHQo5gXzIokVDsvg1rwbr-";
+    private static final String MAX_SDK_KEY = "SvB0hiPF_Z-rsg8trw4XNvoe4BHvdK7BOJzyqmpZFy7PZ7dyvVPtU2GOv8lWgVbmQCcTEz_xTTos9kMT9sTZMg";
     private static final String TOPON_APP_ID = "h67d39ef1bbfe7";
     private static final String TOPON_APP_KEY = "a119b998c7158dde7ad7cc134365c7824";
     private static final String KWAI_APP_ID = "899999";
@@ -50,29 +49,33 @@ public class GlobalApplication extends Application {
     // 初始化 AppLovin MAX SDK 和 Adjust SDK
     private void initAppLovinMaxSdk() {
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> {
-            AppLovinSdkInitializationConfiguration.Builder initConfigBuilder =
-                    AppLovinSdkInitializationConfiguration.builder(MAX_SDK_KEY, this)
-                            .setMediationProvider(AppLovinMediationProvider.MAX);
+        // ExecutorService executor = Executors.newSingleThreadExecutor();
+        // executor.execute(() -> {
+        AppLovinSdkInitializationConfiguration.Builder initConfigBuilder =
+                AppLovinSdkInitializationConfiguration.builder(MAX_SDK_KEY, this)
+                        .setMediationProvider(AppLovinMediationProvider.MAX);
 
-            try {
-                String currentGaid = AdvertisingIdClient.getAdvertisingIdInfo(this).getId();
-                if (currentGaid != null) {
-                    initConfigBuilder.setTestDeviceAdvertisingIds(Collections.singletonList(currentGaid));
-                }
-            } catch (Throwable ignored) {
+        try {
+            String currentGaid = AdvertisingIdClient.getAdvertisingIdInfo(this).getId();
+            if (currentGaid != null) {
+                initConfigBuilder.setTestDeviceAdvertisingIds(Collections.singletonList(currentGaid));
             }
+        } catch (Throwable ignored) {
+        }
 
-            AppLovinSdk.getInstance(this).initialize(initConfigBuilder.build(), config -> {
-                // AppLovin SDK 初始化完成后，初始化 Adjust
-                AdjustConfig adjustConfig = new AdjustConfig(getApplicationContext(), "{YourAppToken}", AdjustConfig.ENVIRONMENT_SANDBOX);
-                Adjust.onCreate(adjustConfig);
-                registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
-            });
+        AppLovinSdk.getInstance(this)
+                .initialize(initConfigBuilder.build(), config -> {
+                    // AppLovin SDK 初始化完成后，初始化 Adjust
+                    AdjustConfig adjustConfig = new AdjustConfig(getApplicationContext(), "{YourAppToken}", AdjustConfig.ENVIRONMENT_SANDBOX);
+                    Adjust.onCreate(adjustConfig);
+                    registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
+                });
 
-            executor.shutdown();
-        });
+        AppLovinSdk.getInstance(this).showMediationDebugger();
+
+        // executor.shutdown();
+        // });
+
     }
 
     private void initTopOnSdk() {

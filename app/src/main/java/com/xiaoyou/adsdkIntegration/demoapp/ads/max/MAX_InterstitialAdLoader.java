@@ -15,21 +15,30 @@ import com.applovin.mediation.MaxAdRevenueListener;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.ads.MaxInterstitialAd;
 import com.xiaoyou.adsdkIntegration.demoapp.data.AdLoader;
+import com.xiaoyou.adsdkIntegration.demoapp.utils.AdContentAnalysis;
+import com.xiaoyou.adsdkIntegration.demoapp.utils.Notify;
 
 import java.util.concurrent.TimeUnit;
 
+// 说说我的这个类的结构
 public class MAX_InterstitialAdLoader implements AdLoader, MaxAdListener, MaxAdRevenueListener {
-
-    private final Context context;
+    private static final String TAG = "max inter";
+    private static Context context;
+    private final String MAX_INTER_ID = "891d085f2e930102";
     private final MaxInterstitialAd interstitialAd;
     private int retryAttempt = 0;
 
     public MAX_InterstitialAdLoader(Context context) {
-        this.context = context.getApplicationContext(); // 避免内存泄漏
-        interstitialAd = new MaxInterstitialAd("4e3d8dc87fc3fb78", context);
+        MAX_InterstitialAdLoader.context = context.getApplicationContext(); // 避免内存泄漏
+        interstitialAd = new MaxInterstitialAd(MAX_INTER_ID);
+
         interstitialAd.setListener(this);
         interstitialAd.setRevenueListener(this);
         interstitialAd.loadAd();
+    }
+
+    private static void notify(CharSequence text) {
+        Notify.notify(TAG, context, text);
     }
 
     @Override
@@ -42,7 +51,7 @@ public class MAX_InterstitialAdLoader implements AdLoader, MaxAdListener, MaxAdR
         if (interstitialAd.isReady()) {
             interstitialAd.showAd();
         } else {
-            Toast.makeText(context, "MAX 插屏广告还没准备好", Toast.LENGTH_SHORT).show();
+            MAX_InterstitialAdLoader.notify("MAX 插屏广告还没准备好");
         }
     }
 
@@ -55,13 +64,13 @@ public class MAX_InterstitialAdLoader implements AdLoader, MaxAdListener, MaxAdR
 
     @Override
     public void onAdLoaded(@NonNull MaxAd ad) {
-        Toast.makeText(context, "MAX 插屏广告加载完成", Toast.LENGTH_SHORT).show();
+        MAX_InterstitialAdLoader.notify("MAX 插屏广告加载完成");
         retryAttempt = 0;
     }
 
     @Override
     public void onAdLoadFailed(@NonNull String adUnitId, @NonNull MaxError maxError) {
-        Toast.makeText(context, "MAX 插屏广告加载失败：" + maxError.getMessage(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "MAX 插屏广告加载失败，错误码：" + maxError.getCode() + "\n" + "报错详情：" + maxError.getMessage(), Toast.LENGTH_SHORT).show();
 
         retryAttempt++;
         long delayMillis = TimeUnit.SECONDS.toMillis((long) Math.pow(2, Math.min(6, retryAttempt)));
@@ -71,10 +80,12 @@ public class MAX_InterstitialAdLoader implements AdLoader, MaxAdListener, MaxAdR
     @Override
     public void onAdDisplayFailed(@NonNull MaxAd ad, @NonNull MaxError error) {
         // interstitialAd.loadAd();
+        Toast.makeText(context, "MAX 插屏广告曝光失败，错误码：" + error.getCode() + "\n" + "报错详情：" + error.getMessage(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onAdDisplayed(@NonNull MaxAd ad) {
+        AdContentAnalysis.getAdContent(ad);
     }
 
     @Override
