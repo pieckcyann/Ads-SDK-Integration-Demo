@@ -8,13 +8,16 @@ android {
 
     defaultConfig {
         // applicationId "com.mahjong.solitaire.tile.pair.match"
-        // applicationId "jp.co.goodroid.hyper.balljumper"
+        applicationId "jp.co.goodroid.hyper.balljumper"
         // applicationId "com.bubble.shooter.family"
-        applicationId "com.horus.sky.defense"
+        //
+        // applicationId "com.horus.sky.defense"
+        // applicationId "com.chenfine.flowing.chagerater"
         minSdkVersion 24
         targetSdk 34
-        versionCode 213
-        versionName "0.0.2.7"
+        versionCode 1
+        versionName "1.0.1"
+        //
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -30,26 +33,16 @@ android {
             dirs 'libs'
         }
         // Anythink(Core)
-        maven {
-            url "https://jfrog.anythinktech.com/artifactory/overseas_sdk"
-        }
+        maven { url "https://jfrog.anythinktech.com/artifactory/overseas_sdk" }
         // Ironsource
-        maven {
-            url "https://android-sdk.is.com/"
-        }
+        maven { url "https://android-sdk.is.com/" }
 
         // Pangle
-        maven {
-            url "https://artifact.bytedance.com/repository/pangle"
-        }
+        maven { url "https://artifact.bytedance.com/repository/pangle" }
         // Mintegral
-        maven {
-            url "https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea"
-        }
+        maven { url "https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea" }
         // Chartboost
-        maven {
-            url "https://cboost.jfrog.io/artifactory/chartboost-ads"
-        }
+        maven { url "https://cboost.jfrog.io/artifactory/chartboost-ads" }
         maven { url "https://cboost.jfrog.io/artifactory/chartboost-mediation" }
 
         maven { url "https://repo.pubmatic.com/artifactory/public-repos" }
@@ -81,19 +74,21 @@ dependencies {
     implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
     // implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
 
-    /* MAX */
-    implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
 
-    implementation 'com.adjust.sdk:adjust-android:4.28.7'
-    implementation 'com.android.installreferrer:installreferrer:2.2'
+    /* MAX */
+    // implementation 'androidx.appcompat:appcompat:1.1.0'
 
-    implementation 'com.google.android.gms:play-services-ads-identifier:17.1.0'
-
-    implementation 'androidx.browser:browser:1.5.0'
+    //
+    // implementation 'com.adjust.sdk:adjust-android:4.28.7'
+    // implementation 'com.android.installreferrer:installreferrer:2.2'
+    //
+    // implementation 'com.google.android.gms:play-services-ads-identifier:17.1.0'
+    //
+    // implementation 'androidx.browser:browser:1.5.0'
 
 
     /* TopOn */
@@ -184,11 +179,12 @@ dependencies {
     /* Bigo */
     // implementation 'com.bigossp:bigo-ads:5.3.0'
 
+
     /* MAX */
     implementation "com.applovin:applovin-sdk:13.2.0"
 
     // MAX - BIGO
-    // implementation "com.applovin.mediation:bigoads-adapter:5.3.0.1"
+    implementation "com.applovin.mediation:bigoads-adapter:5.3.0.1"
 
     // MAX - INMOBI
     // implementation 'com.applovin.mediation:inmobi-adapter:10.8.3.0'
@@ -204,7 +200,10 @@ dependencies {
 
     implementation 'org.jsoup:jsoup:1.16.1'
 
-    // MAX - Fyber / DT
-    implementation 'com.applovin.mediation:fyber-adapter:+'
+    // MAX - Fyber / DT Exchange
+    // implementation 'com.applovin.mediation:fyber-adapter:8.3.7.0'
+
+    // implementation 'com.applovin.mediation:ironsource-adapter:8.3.7.0'
+
 
 }

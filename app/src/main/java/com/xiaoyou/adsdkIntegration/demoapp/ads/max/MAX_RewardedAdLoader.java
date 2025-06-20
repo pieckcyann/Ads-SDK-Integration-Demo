@@ -7,9 +7,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.adjust.sdk.Adjust;
-import com.adjust.sdk.AdjustAdRevenue;
-import com.adjust.sdk.AdjustConfig;
 import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxAdRevenueListener;
 import com.applovin.mediation.MaxError;
@@ -18,6 +15,7 @@ import com.applovin.mediation.MaxRewardedAdListener;
 import com.applovin.mediation.ads.MaxRewardedAd;
 import com.xiaoyou.adsdkIntegration.demoapp.data.AdLoader;
 import com.xiaoyou.adsdkIntegration.demoapp.utils.AdContentAnalysis;
+import com.xiaoyou.adsdkIntegration.demoapp.utils.LogUtil;
 
 import java.util.concurrent.TimeUnit;
 
@@ -27,7 +25,9 @@ import java.util.concurrent.TimeUnit;
 public class MAX_RewardedAdLoader implements AdLoader, MaxRewardedAdListener, MaxAdRevenueListener {
 
     private static Context context;
-    private final String MAX_REWARD_ID = "ab9912ba38d64230";
+    // private final String MAX_REWARD_ID = "ab9912ba38d64230";
+
+    private final String MAX_REWARD_ID = "d525adc1d3fb61ed"; // com.chenfine.flowing.chagerater
     private final MaxRewardedAd rewardedAd;
     private int retryAttempt = 0;
 
@@ -100,6 +100,7 @@ public class MAX_RewardedAdLoader implements AdLoader, MaxRewardedAdListener, Ma
 
     @Override
     public void onAdDisplayed(@NonNull final MaxAd ad) {
+        LogUtil.i("Showing ad from: " + ad.getNetworkName());
         AdContentAnalysis.getAdContent(ad);
     }
 
@@ -128,13 +129,13 @@ public class MAX_RewardedAdLoader implements AdLoader, MaxRewardedAdListener, Ma
     @Override
     public void onAdRevenuePaid(@NonNull final MaxAd maxAd) {
 
-        AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX);
-        adjustAdRevenue.setRevenue(maxAd.getRevenue(), "USD");
-        adjustAdRevenue.setAdRevenueNetwork(maxAd.getNetworkName());
-        adjustAdRevenue.setAdRevenueUnit(maxAd.getAdUnitId());
-        adjustAdRevenue.setAdRevenuePlacement(maxAd.getPlacement());
-
-        Adjust.trackAdRevenue(adjustAdRevenue);
+        // AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX);
+        // adjustAdRevenue.setRevenue(maxAd.getRevenue(), "USD");
+        // adjustAdRevenue.setAdRevenueNetwork(maxAd.getNetworkName());
+        // adjustAdRevenue.setAdRevenueUnit(maxAd.getAdUnitId());
+        // adjustAdRevenue.setAdRevenuePlacement(maxAd.getPlacement());
+        //
+        // Adjust.trackAdRevenue(adjustAdRevenue);
     }
 
     // endregion

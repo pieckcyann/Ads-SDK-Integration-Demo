@@ -9,9 +9,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.adjust.sdk.Adjust;
-import com.adjust.sdk.AdjustAdRevenue;
-import com.adjust.sdk.AdjustConfig;
 import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxAdRevenueListener;
 import com.applovin.mediation.MaxAdViewAdListener;
@@ -107,12 +104,12 @@ public class MAX_BannerAdLoader implements AdLoader, MaxAdViewAdListener, MaxAdR
 
     @Override
     public void onAdRevenuePaid(@NonNull MaxAd ad) {
-        AdjustAdRevenue revenue = new AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX);
-        revenue.setRevenue(ad.getRevenue(), "USD");
-        revenue.setAdRevenueNetwork(ad.getNetworkName());
-        revenue.setAdRevenueUnit(ad.getAdUnitId());
-        revenue.setAdRevenuePlacement(ad.getPlacement());
-
-        Adjust.trackAdRevenue(revenue);
+        // AdjustAdRevenue revenue = new AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX);
+        // revenue.setRevenue(ad.getRevenue(), "USD");
+        // revenue.setAdRevenueNetwork(ad.getNetworkName());
+        // revenue.setAdRevenueUnit(ad.getAdUnitId());
+        // revenue.setAdRevenuePlacement(ad.getPlacement());
+        //
+        // Adjust.trackAdRevenue(revenue);
     }
 }

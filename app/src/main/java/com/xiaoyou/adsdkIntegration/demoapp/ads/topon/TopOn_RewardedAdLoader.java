@@ -7,6 +7,8 @@ import com.anythink.core.api.AdError;
 import com.anythink.rewardvideo.api.ATRewardVideoAd;
 import com.anythink.rewardvideo.api.ATRewardVideoListener;
 import com.xiaoyou.adsdkIntegration.demoapp.data.AdLoader;
+import com.xiaoyou.adsdkIntegration.demoapp.utils.AdContentAnalysis;
+import com.xiaoyou.adsdkIntegration.demoapp.utils.LogUtil;
 import com.xiaoyou.adsdkIntegration.demoapp.utils.Notify;
 
 public class TopOn_RewardedAdLoader implements AdLoader {
@@ -31,7 +33,7 @@ public class TopOn_RewardedAdLoader implements AdLoader {
         mRewardVideoAd = new ATRewardVideoAd(activity, placementId);
 
         mRewardVideoAd.load();
-        
+
         // 注册回调
         mRewardVideoAd.setAdListener(new ATRewardVideoListener() {
 
@@ -57,6 +59,9 @@ public class TopOn_RewardedAdLoader implements AdLoader {
 
                 // 建议在此回调中调用load进行广告的加载，方便下一次广告的展示（不需要调用isAdReady()）
                 mRewardVideoAd.load();
+
+                LogUtil.i("Showing ad from: " + atAdInfo.getNetworkName());
+                AdContentAnalysis.getAdContent(atAdInfo);
             }
 
             @Override

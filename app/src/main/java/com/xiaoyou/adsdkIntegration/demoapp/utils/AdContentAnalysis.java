@@ -37,6 +37,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
@@ -81,13 +82,14 @@ public class AdContentAnalysis {
             ArrayList<Class<?>> classes = getAllClass(obj);
 
             for (Class<?> clazz : classes) {
-                if (name.contains("com.applovin."))
-                    if (getMaxAdContent(clazz, obj))
-                        return;
 
-                if (name.contains("com.anythink.")) { // 这里报错
-                    if (getTopOnAdContent(clazz, obj))
-                        return;
+                if (name.contains("com.applovin.") && getMaxAdContent(clazz, obj)) {
+                    return;
+                }
+
+                // [class com.anythink.core.common.c.l, class com.anythink.core.api.ATAdInfo, class java.lang.Object]
+                if (name.contains("com.anythink.") && getTopOnAdContent(clazz, obj)) { // TODO 这里报错
+                    return;
                 }
             }
 
@@ -105,17 +107,19 @@ public class AdContentAnalysis {
             Object fieldValue = null;
             try {
                 fieldValue = field.get(obj); // 获取字段值
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
+            } catch (IllegalAccessException ignored) {
             }
+
+            // ---
 
             // 不处理 null 值和非 JSON 格式的字段
             if (!(fieldValue instanceof JSONObject)) continue;
             JSONObject jsonObjectField = (JSONObject) fieldValue;
 
             // 检查是否有指定字段
-            if (!jsonObjectField.has("bid_response") || !jsonObjectField.has("network_name"))
+            if (!jsonObjectField.has("bid_response") || !jsonObjectField.has("network_name")) {
                 continue;
+            }
 
             try {
                 String network_name = jsonObjectField.getString("network_name");
@@ -124,48 +128,41 @@ public class AdContentAnalysis {
                     LogUtil.e("bid_response is null");
                     return false;
                 }
-                if ("AppLovin".equals(network_name)) {
-                    if (dealApplovin(network_name, bid_response))
-                        return true;
-                    continue;
+                // 果我的如何我的deal函数就是返回的就是处理是否成功的boolean值，那么我的代码可以如何简化：（这个代码位于一个for循环中）
+                if ("AppLovin".equals(network_name) &&
+                        dealApplovin(network_name, bid_response)) {
+                    return true;
                 }
 
-                if ("APPLOVIN_EXCHANGE".equals(network_name)) {
-                    if (dealApplovinExchange(network_name, bid_response))
-                        return true;
-                    continue;
+                if ("APPLOVIN_EXCHANGE".equals(network_name) &&
+                        dealApplovinExchange(network_name, bid_response)) {
+                    return true;
                 }
 
-                if ("Unity Ads".equals(network_name)) {
-                    if (dealUnity(network_name, bid_response))
-                        return true;
-                    continue;
+                if ("Unity Ads".equals(network_name) &&
+                        dealUnity(network_name, bid_response)) {
+                    return true;
                 }
 
-                if ("Liftoff Monetize".equals(network_name)) {
-                    if (dealVungle(bid_response))
-                        return true;
-                    continue;
+                if ("Liftoff Monetize".equals(network_name) &&
+                        dealVungle(bid_response)) {
+                    return true;
                 }
-                if ("DT Exchange".equals(network_name)) {
-                    if (dealFyber(network_name, bid_response)) // TODO
-                        return true;
-                    continue;
+                if ("DT Exchange".equals(network_name) &&
+                        dealFyber(network_name, bid_response)) { // TODO
+                    return true;
                 }
-                if ("BidMachine".equals(network_name)) {
-                    if (dealBidMachine(network_name, bid_response))
-                        return true;
-                    continue;
+                if ("BidMachine".equals(network_name) &&
+                        dealBidMachine(network_name, bid_response)) {
+                    return true;
                 }
-                if ("ironSource".equals(network_name)) {
-                    if (dealIronSource(network_name, bid_response)) // TODO
-                        return true;
-                    continue;
+                if ("ironSource".equals(network_name) &&
+                        dealIronSource(network_name, bid_response)) { // TODO
+                    return true;
                 }
-                if ("InMobi".equals(network_name)) { // 拿不到跳转链接，只能拿到广告包名
-                    if (dealMaxInmobi(network_name, bid_response))
-                        return true;
-                    continue;
+                if ("InMobi".equals(network_name) &&
+                        dealMaxInmobi(network_name, bid_response)) {
+                    return true;
                 }
                 if ("BIGO Ads".equals(network_name)) {
                     if (dealBigo(network_name, bid_response))
@@ -325,7 +322,7 @@ public class AdContentAnalysis {
         }
         return false;
     }
-    
+
     public static boolean dealFyber(String network_name, String bid_response) {
         try {
             // 通过反射加载 Protobuf 生成的类 (由 Fyber SDK 提供，编译时生成)
@@ -366,17 +363,22 @@ public class AdContentAnalysis {
     public static boolean dealIronSource(String network_name, String bid_response) {
         try {
             String decodeResult = IronSourceAES.decode("C38FB23A402222A0C17D34A92F971D1F", bid_response);
+            // LogUtil.e("bid_response: " + bid_response);
+            //
+            // LogUtil.e("decodeResult: " + decodeResult);
+
             JSONObject decodeJson = new JSONObject(decodeResult);
             JSONObject waterfallJson = decodeJson.optJSONArray("waterfall").optJSONObject(0);
             JSONObject serverDataJson = waterfallJson.optJSONObject("serverData");
             String adMarkup = serverDataJson.optString("adMarkup");
             adMarkup = URLDecoder.decode(adMarkup);
+
             JSONObject adMarkupJson = new JSONObject(adMarkup);
             JSONObject bidJson = adMarkupJson.optJSONObject("seatbid").optJSONArray("bid").optJSONObject(0);
             String packageName = bidJson.optString("bundleId");
             String url = bidJson.optJSONObject("ext").optJSONObject("clickTags").optString("clickURL");
             if (!TextUtils.isEmpty(packageName) && !TextUtils.isEmpty(url)) {
-                sendPackageName(network_name, "APP_" + packageName, url);
+                sendPackageName(network_name, AdContentConstant.PREFIX_APP + packageName, url);
             }
         } catch (Throwable t) {
             t.printStackTrace();
@@ -690,32 +692,59 @@ public class AdContentAnalysis {
         return str;
     }
 
-    private static boolean getTopOnAdContent(Class clazz, Object obj) {
 
-        Field[] fields = new Field[0];
-        try {
-            fields = clazz.getDeclaredFields();
-        } catch (Throwable e) {
-        }
-        for (Field field : fields) {
-            field.setAccessible(true);
-            Object fieldValue = null;
-            try {
-                fieldValue = field.get(obj);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-            if (fieldValue == null) {
-                continue;
-            }
+    private static boolean getTopOnAdContent(Class<?> clazz, Object obj) {
+        List<Object> fieldValues = ReflectUtil.getAllFieldValues(clazz, obj);
+        for (Object fieldValue : fieldValues) {
             String data = fieldValue + "";
-            String platForm = "";
+
+            // com.anythink.network.chartboost.ChartboostATInterstitialAdapter
+            // LogUtil.i(fieldValue.getClass().getName());
+            // LogUtil.i(data);
+
+            // List<Object> dataValues = ReflectUtil.getAllFieldValues(fieldValue);
+            // for (Object dataValue : dataValues) {
+            //     // com.chartboost.sdk.ads.Interstitial
+            //     LogUtil.i(dataValue.getClass().getName());
+            //     LogUtil.d(dataValue + "");
+            //
+            //     List<Object> xs = ReflectUtil.getAllFieldValues(dataValue);
+            //     for (Object x : xs) {
+            //         //
+            //         // LogUtil.i(x.getClass().getName());
+            //         // LogUtil.e(x + "");
+            //     }
+            // }
+
+            // LogUtil.i(fieldValue.getClass().getName());
+            // LogUtil.e(field.getName() + ": " + data);
+
+            LogUtil.i(data);
+
+            String platForm;
+
+            if (data.contains("IronsourceATInterstitialAdapter") || data.contains("IronsourceATRewardedVideoAdapter")) {
+                platForm = "Ironsource";
+                data = getNetworkDataByNameForTopOn(fieldValue, platForm);
+
+                return dealIronSource(platForm, data);
+            }
+
+            // com.anythink.network.chartboost.ChartboostATInterstitialAdapter@73d2ef4
+            if (data.contains("ChartboostATInterstitialAdapter") || data.contains("ChartboostATRewardedVideoAdapter")) {
+
+                platForm = "Chartboost";
+                data = getNetworkDataByNameForTopOn(fieldValue, platForm);
+
+                return false;
+                // return dealChartboost(platForm, data);
+            }
+
             if (data.contains("VungleATInterstitialAdapter") || data.contains("VungleATRewardedVideoAdapter")) {
                 platForm = "Vungle";
-                data = getNetworkDataByName(fieldValue, platForm);
-                if (dealVungle(data)) {
-                    return true;
-                }
+                data = getNetworkDataByNameForTopOn(fieldValue, platForm);
+
+                return dealVungle(data);
             }
 //            if (data.contains("BigoATInterstitialAdapter") || data.contains("BigoATRewardedVideoAdapter")) {
 //                platForm = "Bigo";
@@ -733,41 +762,37 @@ public class AdContentAnalysis {
 //            }
 
         }
-
         return false;
     }
 
-    private static String getNetworkDataByName(Object object, String platForm) {
-        try {
-            Field[] fields = new Field[0];
-            try {
-                fields = object.getClass().getDeclaredFields();
-            } catch (Throwable e) {
-            }
-            for (Field field : fields) {
-                field.setAccessible(true);
-                Object fieldValue = null;
-                try {
-                    fieldValue = field.get(object);
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-                if (fieldValue == null) {
-                    continue;
-                }
-                String vungleData = fieldValue + "";
-                if ("Vungle".equals(platForm)) {
-                    if (vungleData.contains("version") && vungleData.contains("adunit")) {
-                        return vungleData;
-                    }
-                }
-                if ("Bigo".equals(platForm)) {
+    private static String getNetworkDataByNameForTopOn(Object object, String platForm) {
+        List<Object> fieldValues = ReflectUtil.getAllFieldValues(object);
+        for (Object fieldValue : fieldValues) {
+            String data = fieldValue + "";
 
+            LogUtil.e(data);
+
+            // [a: 23705628, b: , c: IronsourceATInterstitialAdapter]
+            if ("Ironsource".equalsIgnoreCase(platForm)) {
+                return data;
+            }
+
+            // [a: reward_01, b: com.chartboost.sdk.ads.Rewarded@9be782e]
+            if ("Chartboost".equalsIgnoreCase(platForm)) {
+                LogUtil.i(data);
+                return data;
+            }
+
+            if ("Vungle".equalsIgnoreCase(platForm)) {
+                if (data.contains("version") && data.contains("adunit")) {
+                    return data;
                 }
             }
-        } catch (Throwable e) {
-            e.printStackTrace();
+            if ("Bigo".equalsIgnoreCase(platForm)) {
+
+            }
         }
+        
         return "";
     }
 

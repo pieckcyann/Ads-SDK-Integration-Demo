@@ -5,9 +5,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.adjust.sdk.Adjust;
-import com.adjust.sdk.AdjustAdRevenue;
-import com.adjust.sdk.AdjustConfig;
 import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxAdListener;
 import com.applovin.mediation.MaxAdRevenueListener;
@@ -95,13 +92,13 @@ public class MAX_AppOpenAdLoader
     public void onAdRevenuePaid(@NonNull final MaxAd ad) {
 
 
-        AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX);
-        adjustAdRevenue.setRevenue(ad.getRevenue(), "USD");
-        adjustAdRevenue.setAdRevenueNetwork(ad.getNetworkName());
-        adjustAdRevenue.setAdRevenueUnit(ad.getAdUnitId());
-        adjustAdRevenue.setAdRevenuePlacement(ad.getPlacement());
-
-        Adjust.trackAdRevenue(adjustAdRevenue);
+        // AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX);
+        // adjustAdRevenue.setRevenue(ad.getRevenue(), "USD");
+        // adjustAdRevenue.setAdRevenueNetwork(ad.getNetworkName());
+        // adjustAdRevenue.setAdRevenueUnit(ad.getAdUnitId());
+        // adjustAdRevenue.setAdRevenuePlacement(ad.getPlacement());
+        //
+        // Adjust.trackAdRevenue(adjustAdRevenue);
     }
 
     // endregion

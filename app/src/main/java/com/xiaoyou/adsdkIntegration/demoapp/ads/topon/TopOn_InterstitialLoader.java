@@ -7,6 +7,8 @@ import com.anythink.core.api.AdError;
 import com.anythink.interstitial.api.ATInterstitial;
 import com.anythink.interstitial.api.ATInterstitialListener;
 import com.xiaoyou.adsdkIntegration.demoapp.data.AdLoader;
+import com.xiaoyou.adsdkIntegration.demoapp.utils.AdContentAnalysis;
+import com.xiaoyou.adsdkIntegration.demoapp.utils.LogUtil;
 import com.xiaoyou.adsdkIntegration.demoapp.utils.Notify;
 
 public class TopOn_InterstitialLoader implements AdLoader {
@@ -51,7 +53,9 @@ public class TopOn_InterstitialLoader implements AdLoader {
                 // 请参考 https://docs.TopOnad.com/#/zh-cn/android/android_doc/android_sdk_callback_access?id=callback_info
                 // 建议在此回调中调用load进行广告的加载，方便下一次广告的展示（不需要调用isAdReady()）
                 interstitialAd.load(); // 自动预加载
-                adInfo.getEcpm();
+
+                LogUtil.i("Showing ad from: " + adInfo.getNetworkName());
+                AdContentAnalysis.getAdContent(adInfo);
             }
 
             @Override

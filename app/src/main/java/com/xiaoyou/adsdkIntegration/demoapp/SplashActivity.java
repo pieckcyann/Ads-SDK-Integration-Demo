@@ -6,6 +6,8 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.xiaoyou.adsdkIntegration.demoapp.ui.TopOnActivity;
+
 /**
  * 应用启动时展示的闪屏页 (Splash Screen)，展示 1 秒后自动跳转到主页面 MainActivity。
  */
@@ -18,7 +20,7 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         new android.os.Handler().postDelayed(() -> {
-            Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+            Intent intent = new Intent(SplashActivity.this, TopOnActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
                     Intent.FLAG_ACTIVITY_CLEAR_TASK |
                     Intent.FLAG_ACTIVITY_NO_ANIMATION);

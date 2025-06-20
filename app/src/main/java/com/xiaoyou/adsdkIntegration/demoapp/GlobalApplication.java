@@ -1,16 +1,9 @@
 package com.xiaoyou.adsdkIntegration.demoapp;
 
-import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.os.Bundle;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.adjust.sdk.Adjust;
-import com.adjust.sdk.AdjustConfig;
 import com.anythink.core.api.ATSDK;
 import com.applovin.sdk.AppLovinMediationProvider;
 import com.applovin.sdk.AppLovinSdk;
@@ -27,7 +20,8 @@ import sg.bigo.ads.api.AdConfig;
 
 public class GlobalApplication extends Application {
     // private static final String MAX_SDK_KEY = "9uHgeBwag3NXva9MC23ToO3q11Ve59bF1uwg4qGltdGmCQ7OSByFZ_3b1ZF7krMlkHQo5gXzIokVDsvg1rwbr-";
-    private static final String MAX_SDK_KEY = "SvB0hiPF_Z-rsg8trw4XNvoe4BHvdK7BOJzyqmpZFy7PZ7dyvVPtU2GOv8lWgVbmQCcTEz_xTTos9kMT9sTZMg";
+    // private static final String MAX_SDK_KEY = "SvB0hiPF_Z-rsg8trw4XNvoe4BHvdK7BOJzyqmpZFy7PZ7dyvVPtU2GOv8lWgVbmQCcTEz_xTTos9kMT9sTZMg";
+    private static final String MAX_SDK_KEY = "n0PnK0ipoeVx_LS1vCllzQ8nBIuLulhKEXsq_78fiv1a41D_Gs19pa7HDBxzNMN2TMmRMF1uv6RaTKkfzi8aLE"; // com.chenfine.flowing.chagerater
     private static final String TOPON_APP_ID = "h67d39ef1bbfe7";
     private static final String TOPON_APP_KEY = "a119b998c7158dde7ad7cc134365c7824";
     private static final String KWAI_APP_ID = "899999";
@@ -66,13 +60,20 @@ public class GlobalApplication extends Application {
         AppLovinSdk.getInstance(this)
                 .initialize(initConfigBuilder.build(), config -> {
                     // AppLovin SDK 初始化完成后，初始化 Adjust
-                    AdjustConfig adjustConfig = new AdjustConfig(getApplicationContext(), "{YourAppToken}", AdjustConfig.ENVIRONMENT_SANDBOX);
-                    Adjust.onCreate(adjustConfig);
-                    registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
+                    // AdjustConfig adjustConfig = new AdjustConfig(getApplicationContext(), "{YourAppToken}", AdjustConfig.ENVIRONMENT_SANDBOX);
+                    // Adjust.onCreate(adjustConfig);
+                    // registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
                 });
 
-        AppLovinSdk.getInstance(this).showMediationDebugger();
+        // AppLovinSdk.getInstance(this).showMediationDebugger();
 
+        AppLovinSdk sdk = AppLovinSdk.getInstance(this);
+
+        sdk.getSettings().setVerboseLogging(true);
+
+        // sdk.getSettings().setMediatedNetworkConfigurations(
+        //         Collections.singletonMap("applovin", null) // 👈 禁用 AppLovin Exchange
+        // );
         // executor.shutdown();
         // });
 
@@ -125,36 +126,36 @@ public class GlobalApplication extends Application {
         });
     }
 
-    public static final class AdjustLifecycleCallbacks implements ActivityLifecycleCallbacks {
-        @Override
-        public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle bundle) {
-        }
-
-        @Override
-        public void onActivityStarted(@NonNull Activity activity) {
-        }
-
-        @Override
-        public void onActivityResumed(@NonNull Activity activity) {
-            Adjust.onResume();
-        }
-
-        @Override
-        public void onActivityPaused(@NonNull Activity activity) {
-            Adjust.onPause();
-        }
-
-        @Override
-        public void onActivityStopped(@NonNull Activity activity) {
-        }
-
-        @Override
-        public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle bundle) {
-        }
-
-        @Override
-        public void onActivityDestroyed(@NonNull Activity activity) {
-        }
-    }
+    // public static final class AdjustLifecycleCallbacks implements ActivityLifecycleCallbacks {
+    //     @Override
+    //     public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle bundle) {
+    //     }
+    //
+    //     @Override
+    //     public void onActivityStarted(@NonNull Activity activity) {
+    //     }
+    //
+    //     @Override
+    //     public void onActivityResumed(@NonNull Activity activity) {
+    //         Adjust.onResume();
+    //     }
+    //
+    //     @Override
+    //     public void onActivityPaused(@NonNull Activity activity) {
+    //         Adjust.onPause();
+    //     }
+    //
+    //     @Override
+    //     public void onActivityStopped(@NonNull Activity activity) {
+    //     }
+    //
+    //     @Override
+    //     public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle bundle) {
+    //     }
+    //
+    //     @Override
+    //     public void onActivityDestroyed(@NonNull Activity activity) {
+    //     }
+    // }
 
 }
