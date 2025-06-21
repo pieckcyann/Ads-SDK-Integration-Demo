@@ -37,7 +37,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
@@ -53,48 +52,11 @@ import javax.crypto.spec.SecretKeySpec;
 
 import sg.bigo.ads.BigoAdSdk;
 
-public class AdContentAnalysis {
-
+public class MAXAdContentAnalyzer {
     private static HashMap<String, Object> map = new HashMap<>();
 
-
     // 获取一个对象所属的类以及其所有父类的 Class 列表
-    private static ArrayList<Class<?>> getAllClass(Object obj) {
-        ArrayList<Class<?>> classes = new ArrayList<>();
-        Class<?> clazz = obj.getClass();
-        classes.add(clazz);
 
-        // 一直向上查找父类，直到没有父类为止
-        while (clazz.getSuperclass() != null) {
-            clazz = clazz.getSuperclass();
-            classes.add(clazz);
-        }
-
-        return classes;
-    }
-
-
-    public static void getAdContent(Object obj) {
-        new Thread(() -> {
-
-            String name = obj.getClass().getName();
-            if (TextUtils.isEmpty(name)) return;
-            ArrayList<Class<?>> classes = getAllClass(obj);
-
-            for (Class<?> clazz : classes) {
-
-                if (name.contains("com.applovin.") && getMaxAdContent(clazz, obj)) {
-                    return;
-                }
-
-                // [class com.anythink.core.common.c.l, class com.anythink.core.api.ATAdInfo, class java.lang.Object]
-                if (name.contains("com.anythink.") && getTopOnAdContent(clazz, obj)) { // TODO 这里报错
-                    return;
-                }
-            }
-
-        }).start();
-    }
 
     public static boolean getMaxAdContent(Class<?> clazz, Object obj) {
         Field[] fields = new Field[0];
@@ -693,109 +655,6 @@ public class AdContentAnalysis {
     }
 
 
-    private static boolean getTopOnAdContent(Class<?> clazz, Object obj) {
-        List<Object> fieldValues = ReflectUtil.getAllFieldValues(clazz, obj);
-        for (Object fieldValue : fieldValues) {
-            String data = fieldValue + "";
-
-            // com.anythink.network.chartboost.ChartboostATInterstitialAdapter
-            // LogUtil.i(fieldValue.getClass().getName());
-            // LogUtil.i(data);
-
-            // List<Object> dataValues = ReflectUtil.getAllFieldValues(fieldValue);
-            // for (Object dataValue : dataValues) {
-            //     // com.chartboost.sdk.ads.Interstitial
-            //     LogUtil.i(dataValue.getClass().getName());
-            //     LogUtil.d(dataValue + "");
-            //
-            //     List<Object> xs = ReflectUtil.getAllFieldValues(dataValue);
-            //     for (Object x : xs) {
-            //         //
-            //         // LogUtil.i(x.getClass().getName());
-            //         // LogUtil.e(x + "");
-            //     }
-            // }
-
-            // LogUtil.i(fieldValue.getClass().getName());
-            // LogUtil.e(field.getName() + ": " + data);
-
-            LogUtil.i(data);
-
-            String platForm;
-
-            if (data.contains("IronsourceATInterstitialAdapter") || data.contains("IronsourceATRewardedVideoAdapter")) {
-                platForm = "Ironsource";
-                data = getNetworkDataByNameForTopOn(fieldValue, platForm);
-
-                return dealIronSource(platForm, data);
-            }
-
-            // com.anythink.network.chartboost.ChartboostATInterstitialAdapter@73d2ef4
-            if (data.contains("ChartboostATInterstitialAdapter") || data.contains("ChartboostATRewardedVideoAdapter")) {
-
-                platForm = "Chartboost";
-                data = getNetworkDataByNameForTopOn(fieldValue, platForm);
-
-                return false;
-                // return dealChartboost(platForm, data);
-            }
-
-            if (data.contains("VungleATInterstitialAdapter") || data.contains("VungleATRewardedVideoAdapter")) {
-                platForm = "Vungle";
-                data = getNetworkDataByNameForTopOn(fieldValue, platForm);
-
-                return dealVungle(data);
-            }
-//            if (data.contains("BigoATInterstitialAdapter") || data.contains("BigoATRewardedVideoAdapter")) {
-//                platForm = "Bigo";
-//                data = getNetworkDataByName(fieldValue, platForm);
-//                if (dealBigo(platForm, data)) {
-//                    return true;
-//                }
-//            }
-//            if (data.contains("InmobiATInterstitialAdapter") || data.contains("InmobiATRewardedVideoAdapter")) {
-//                platForm = "Inmobi";
-//                data = getNetworkDataByName(fieldValue, platForm);
-//                if (dealInmobi(platForm, data)) {
-//                    return true;
-//                }
-//            }
-
-        }
-        return false;
-    }
-
-    private static String getNetworkDataByNameForTopOn(Object object, String platForm) {
-        List<Object> fieldValues = ReflectUtil.getAllFieldValues(object);
-        for (Object fieldValue : fieldValues) {
-            String data = fieldValue + "";
-
-            LogUtil.e(data);
-
-            // [a: 23705628, b: , c: IronsourceATInterstitialAdapter]
-            if ("Ironsource".equalsIgnoreCase(platForm)) {
-                return data;
-            }
-
-            // [a: reward_01, b: com.chartboost.sdk.ads.Rewarded@9be782e]
-            if ("Chartboost".equalsIgnoreCase(platForm)) {
-                LogUtil.i(data);
-                return data;
-            }
-
-            if ("Vungle".equalsIgnoreCase(platForm)) {
-                if (data.contains("version") && data.contains("adunit")) {
-                    return data;
-                }
-            }
-            if ("Bigo".equalsIgnoreCase(platForm)) {
-
-            }
-        }
-        
-        return "";
-    }
-
     public static boolean dealBigo() {
         try {
 
@@ -805,7 +664,7 @@ public class AdContentAnalysis {
                 return false;
             }
             LogUtil.e("Bigo版本:" + bigoVersion);
-            printFieldsMyActivity(Utils.getCurrentActivity(), 0, 5);
+            printFieldsMyActivity(TopOnAdContentAnalyzer.getCurrentActivity(), 0, 5);
             Object object;
             if (bigoVersion > 40200) {
                 object = map.get("sg.bigo.ads.core.e.a.p");
@@ -824,8 +683,7 @@ public class AdContentAnalysis {
                 String destination_url = (String) destinationUrlField.get(object);
                 if (isMarketUrl(destination_url)) {
                     Uri uri = Uri.parse(destination_url);
-                    String packageName = "APP_" + uri.getQueryParameter("id");
-                    sendPackageName("Bigo", packageName, destination_url);
+                    sendPackageName("Bigo", AdContentConstant.PREFIX_APP + uri.getQueryParameter("id"), destination_url);
                     return true;
                 }
                 Field adContentField;

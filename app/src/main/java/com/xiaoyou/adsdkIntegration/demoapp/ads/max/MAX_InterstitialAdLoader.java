@@ -12,7 +12,7 @@ import com.applovin.mediation.MaxAdRevenueListener;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.ads.MaxInterstitialAd;
 import com.xiaoyou.adsdkIntegration.demoapp.data.AdLoader;
-import com.xiaoyou.adsdkIntegration.demoapp.utils.AdContentAnalysis;
+import com.xiaoyou.adsdkIntegration.demoapp.utils.AdContentAnalyzer;
 import com.xiaoyou.adsdkIntegration.demoapp.utils.LogUtil;
 import com.xiaoyou.adsdkIntegration.demoapp.utils.Notify;
 
@@ -88,7 +88,7 @@ public class MAX_InterstitialAdLoader implements AdLoader, MaxAdListener, MaxAdR
 
     @Override
     public void onAdDisplayed(@NonNull MaxAd ad) {
-        AdContentAnalysis.getAdContent(ad);
+        AdContentAnalyzer.getAdContent(ad);
     }
 
     @Override

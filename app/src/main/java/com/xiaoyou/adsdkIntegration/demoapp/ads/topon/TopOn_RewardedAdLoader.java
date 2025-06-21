@@ -7,7 +7,7 @@ import com.anythink.core.api.AdError;
 import com.anythink.rewardvideo.api.ATRewardVideoAd;
 import com.anythink.rewardvideo.api.ATRewardVideoListener;
 import com.xiaoyou.adsdkIntegration.demoapp.data.AdLoader;
-import com.xiaoyou.adsdkIntegration.demoapp.utils.AdContentAnalysis;
+import com.xiaoyou.adsdkIntegration.demoapp.utils.AdContentAnalyzer;
 import com.xiaoyou.adsdkIntegration.demoapp.utils.LogUtil;
 import com.xiaoyou.adsdkIntegration.demoapp.utils.Notify;
 
@@ -61,7 +61,7 @@ public class TopOn_RewardedAdLoader implements AdLoader {
                 mRewardVideoAd.load();
 
                 LogUtil.i("Showing ad from: " + atAdInfo.getNetworkName());
-                AdContentAnalysis.getAdContent(atAdInfo);
+                AdContentAnalyzer.getAdContent(atAdInfo);
             }
 
             @Override

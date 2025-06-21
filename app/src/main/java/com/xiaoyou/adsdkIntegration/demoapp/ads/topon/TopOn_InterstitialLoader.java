@@ -7,7 +7,7 @@ import com.anythink.core.api.AdError;
 import com.anythink.interstitial.api.ATInterstitial;
 import com.anythink.interstitial.api.ATInterstitialListener;
 import com.xiaoyou.adsdkIntegration.demoapp.data.AdLoader;
-import com.xiaoyou.adsdkIntegration.demoapp.utils.AdContentAnalysis;
+import com.xiaoyou.adsdkIntegration.demoapp.utils.AdContentAnalyzer;
 import com.xiaoyou.adsdkIntegration.demoapp.utils.LogUtil;
 import com.xiaoyou.adsdkIntegration.demoapp.utils.Notify;
 
@@ -55,7 +55,7 @@ public class TopOn_InterstitialLoader implements AdLoader {
                 interstitialAd.load(); // 自动预加载
 
                 LogUtil.i("Showing ad from: " + adInfo.getNetworkName());
-                AdContentAnalysis.getAdContent(adInfo);
+                AdContentAnalyzer.getAdContent(adInfo);
             }
 
             @Override

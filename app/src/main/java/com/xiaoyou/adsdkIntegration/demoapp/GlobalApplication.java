@@ -2,6 +2,7 @@ package com.xiaoyou.adsdkIntegration.demoapp;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.IntentFilter;
 import android.util.Log;
 
 import com.anythink.core.api.ATSDK;
@@ -32,6 +33,11 @@ public class GlobalApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        IntentFilter filter = new IntentFilter("com.xiaoyou.action.DUMP_INFO");
+        DebugInfoReceiver receiver = new DebugInfoReceiver();
+        this.registerReceiver(receiver, filter);
+
 
         // 初始化各广告 SDK
         initAppLovinMaxSdk();

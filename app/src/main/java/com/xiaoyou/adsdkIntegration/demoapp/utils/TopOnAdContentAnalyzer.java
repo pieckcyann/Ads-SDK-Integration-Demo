@@ -1,7 +1,9 @@
 package com.xiaoyou.adsdkIntegration.demoapp.utils;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -14,27 +16,59 @@ import android.webkit.WebView;
 import com.applovin.mediation.MaxAd;
 import com.applovin.sdk.AppLovinSdk;
 import com.mbridge.msdk.foundation.entity.CampaignEx;
+import com.xiaoyou.adsdkIntegration.demoapp.constants.AdContentConstant;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.net.URLDecoder;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Stack;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Utils {
+public class TopOnAdContentAnalyzer {
 
     private static ArrayList<String> list = new ArrayList<>();
     private static long sendTime = 0;
+
+    public static boolean getTopOnAdContent(Class<?> clazz, Object obj) {
+        List<Object> fieldValues = ReflectUtil.getAllFieldValues(clazz, obj);
+        for (Object fieldValue : fieldValues) {
+            String data = fieldValue + "";
+
+            String platForm;
+
+            if (data.contains("ChartboostATInterstitialAdapter") || data.contains("ChartboostATRewardedVideoAdapter")) {
+                platForm = "Chartboost";
+                return TopOnAdContentAnalyzer.getPackageNameE(getCurrentActivity(), platForm, 0, 13);
+                // return dealChartboost(platForm, data);
+
+                // if (data.contains("IronsourceATInterstitialAdapter") || data.contains("IronsourceATRewardedVideoAdapter")) {
+                // }
+            }
+
+            if (data.contains("ironSourceATInterstitialAdapter") || data.contains("ironSourceATRewardedVideoAdapter")) {
+                platForm = "ironSource";
+                return TopOnAdContentAnalyzer.getPackageNameE(getCurrentActivity(), platForm, 0, 13);
+            }
+
+        }
+        return false;
+    }
 
     public static void printFieldsMyActivityE(Object obj, int loop, int maxLoop, StringBuffer stringBuffer) {
         list.clear();
@@ -45,13 +79,13 @@ public class Utils {
         if (obj instanceof Activity) {
             printFields(obj, loop, maxLoop, stringBuffer);
             String name = obj.getClass().getName();
-            LogUtil.e("name:" + name);
+            LogUtil.e("name: " + name);
         }
     }
 
-    private static ArrayList<Class> getClass(Object obj) {
-        ArrayList<Class> list = new ArrayList<>();
-        Class clazz = obj.getClass();
+    private static ArrayList<Class<?>> getClass(Object obj) {
+        ArrayList<Class<?>> list = new ArrayList<>();
+        Class<?> clazz = obj.getClass();
         list.add(clazz);
         while (clazz.getSuperclass() != null) {
             clazz = clazz.getSuperclass();
@@ -150,8 +184,8 @@ public class Utils {
         if (obj == null) {
             return;
         }
-        ArrayList<Class> list = getClass(obj);
-        for (Class clazz : list) {
+        ArrayList<Class<?>> list = getClass(obj);
+        for (Class<?> clazz : list) {
             printFields1(clazz, obj, loop, maxLoop, stringBuffer);
         }
 
@@ -163,8 +197,7 @@ public class Utils {
         Object fieldValue = null;
         try {
             fieldValue = field.get(obj);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+        } catch (IllegalAccessException ignored) {
         }
         if (fieldValue == null) {
             return false;
@@ -186,7 +219,7 @@ public class Utils {
             String str = "";
             try {
                 str = "" + fieldValue;
-            } catch (Throwable e) {
+            } catch (Throwable ignored) {
 
             }
 
@@ -232,11 +265,11 @@ public class Utils {
                     LogUtil.e(String.format("link_type:%s,packageName:%s,click_url:%s,mraid:%s", link_type, packageName, click_url, mraid));
 
                     if (link_type == 2) {// App
-                        AdContentAnalysis.sendPackageName("MTG", "APP_" + packageName, click_url);
+                        MAXAdContentAnalyzer.sendPackageName("MTG", "APP_" + packageName, click_url);
                         return true;
                     }
                     if (link_type == 3 && !TextUtils.isEmpty(packageName) && !TextUtils.isEmpty(click_url)) {
-                        AdContentAnalysis.sendPackageName("MTG", "APPThird_" + packageName, click_url);
+                        MAXAdContentAnalyzer.sendPackageName("MTG", "APPThird_" + packageName, click_url);
                         return true;
                     }
                     if (link_type == 9 || link_type == 8) {// h5
@@ -254,7 +287,7 @@ public class Utils {
                                 String tittle = jsonObject.getString("title");
                                 String url = jsonObject.getString("url");
                                 if (!TextUtils.isEmpty(tittle) && !TextUtils.isEmpty(url)) {
-                                    AdContentAnalysis.sendPackageName("MTG", "H5_zemCreative." + tittle, url);
+                                    MAXAdContentAnalyzer.sendPackageName("MTG", "H5_zemCreative." + tittle, url);
                                     return true;
                                 }
                             } catch (Throwable e) {
@@ -267,7 +300,7 @@ public class Utils {
                                     e.printStackTrace();
                                 }
                             }
-                            AdContentAnalysis.sendPackageName("MTG", "H5_" + packageName, click_url);
+                            MAXAdContentAnalyzer.sendPackageName("MTG", "H5_" + packageName, click_url);
                             return true;
                         }
                     }
@@ -326,7 +359,52 @@ public class Utils {
                 }
             }
 
+            if ("IronSource".equals(platform)) {
+                LogUtil.i("识别 IronSource 内容");
+                LogUtil.i(str);
+            }
             if ("Chartboost".equals(platform) || "Fyber".equals(platform)) {
+                LogUtil.i("识别 ChartBoost 内容");
+
+                if (str.startsWith("AppRequest")) {
+                    String temp = str;
+                    // VAST XML
+                    LogUtil.d("temp: " + temp);
+
+                    if (temp.contains("<VASTversion=")) {
+                        temp = temp.substring(temp.indexOf("<VASTversion="), temp.indexOf("</VAST>") + 7);
+                        Document document = Jsoup.parse(temp, "", org.jsoup.parser.Parser.xmlParser());
+
+                        LogUtil.d("Formatted XML:\n" + document.outerHtml());
+
+                        Elements items = document.select("VASTAdTagURI");
+                        if (!items.isEmpty()) {
+                            temp = items.get(0).text();
+                            String decode = URLDecoder.decode(temp);
+                            decode = decode.substring(decode.indexOf("click_through_url=") + 18);
+                            decode = decode.substring(0, decode.indexOf("&"));
+                            if (isMarketUrl(decode)) {
+                                Uri uri = Uri.parse(decode);
+                                String packageName = uri.getQueryParameter("id");
+                                sendPackageName("Chartboost", AdContentConstant.PREFIX_APP + packageName);
+                                return true;
+                            }
+                        }
+                    } else {
+                        temp = temp.substring(temp.indexOf("varsioDataObject="));
+                        String varsioDataObject = matchOuterBrackets(temp, '{', '}');
+                        if (varsioDataObject != null) {
+                            JSONObject jsonObject = new JSONObject(varsioDataObject);
+                            if (jsonObject.optJSONObject("adDetails") != null) {
+                                String title = Objects.requireNonNull(jsonObject.optJSONObject("adDetails")).optString("title");
+                                sendPackageName("Chartboost", AdContentConstant.PREFIX_H5 + title);
+                                return true;
+                            }
+                        }
+
+                    }
+                }
+
                 if (str.contains("details?id=")) {
                     boolean result = getMarketPackageName(platform, str, "id");
                     if (result)
@@ -566,13 +644,13 @@ public class Utils {
         return getPackageName(fieldValue, platform, loop, maxLoop, map);
     }
 
-    public static boolean getPakcageNameE(Object obj, String platform, int loop, int maxLoop) {
+    public static boolean getPackageNameE(Object obj, String platform, int loop, int maxLoop) {
         list.clear();
-        LogUtil.e("getPakcageNameE->platform:" + platform + ",maxLoop:" + maxLoop);
+        LogUtil.e("getPackageNameE -> platform: " + platform + " , maxLoop: " + maxLoop);
         return getPackageName(obj, platform, loop, maxLoop, null);
     }
 
-    public static boolean getPakcageNameE(Object obj, String platform, int loop, int maxLoop, HashMap<String, String> map) {
+    public static boolean getPackageNameE(Object obj, String platform, int loop, int maxLoop, HashMap<String, String> map) {
         list.clear();
         LogUtil.e("getPakcageNameE->platform:" + platform + ",maxLoop:" + maxLoop);
         return getPackageName(obj, platform, loop, maxLoop, map);
@@ -586,8 +664,8 @@ public class Utils {
         if (obj == null) {
             return false;
         }
-        ArrayList<Class> list = getClass(obj);
-        for (Class clazz : list) {
+        ArrayList<Class<?>> list = getClass(obj);
+        for (Class<?> clazz : list) {
             if (getPackageName(clazz, obj, platform, loop, maxLoop, map)) {
                 return true;
             }
@@ -596,7 +674,7 @@ public class Utils {
         return false;
     }
 
-    private static boolean getPackageName(Class clazz, Object obj, String platform, int loop, int maxLoop, HashMap<String, String> map) {
+    private static boolean getPackageName(Class<?> clazz, Object obj, String platform, int loop, int maxLoop, HashMap<String, String> map) {
         String name = clazz.getName();
         if (name.startsWith("android.content")
                 || name.startsWith("android.app")
@@ -614,7 +692,7 @@ public class Utils {
         Field[] fields = new Field[0];
         try {
             fields = clazz.getDeclaredFields();
-        } catch (Throwable e) {
+        } catch (Throwable ignored) {
         }
         for (Field field : fields) {
             if (dealField(obj, platform, loop, maxLoop, field, map)) {
@@ -636,34 +714,58 @@ public class Utils {
         return false;
     }
 
+    /**
+     * 通过反射访问 Android 系统内部类 ActivityThread 的字段，从而获取当前正在运行且未暂停的 Activity 实例
+     */
+    @SuppressLint({"PrivateApi", "DiscouragedPrivateApi"})
     public static Activity getCurrentActivity() {
         try {
-            Class activityThreadClass = Class.forName("android.app.ActivityThread");
-            Object activityThread = activityThreadClass.getMethod("currentActivityThread", new Class[0]).invoke((Object) null, new Object[0]);
+            // 获取 ActivityThread 类 (Android 系统用于管理主线程和 Activity 的类，内部类，非公开 API)
+            Class<?> activityThreadClass = Class.forName("android.app.ActivityThread");
+
+            // 获取当前线程的 ActivityThread 实例
+            Object activityThread = activityThreadClass
+                    .getMethod("currentActivityThread", new Class[0])
+                    .invoke(null);
+
+            // 获取 mActivities 字段 (一个保存所有 ActivityRecord 的 Map)
             Field activitiesField = activityThreadClass.getDeclaredField("mActivities");
-            activitiesField.setAccessible(true);
-            for (Object activityRecord : ((Map) activitiesField.get(activityThread)).values()) {
-                Class activityRecordClass = activityRecord.getClass();
+            activitiesField.setAccessible(true); // 设置可访问私有字段
+
+            // 遍历 mActivities Map 中的所有 ActivityRecord
+            Map activities = (Map) activitiesField.get(activityThread);
+            for (Object activityRecord : activities.values()) {
+                Class<?> activityRecordClass = activityRecord.getClass();
+
+                // 获取 paused 字段，判断该 Activity 是否处于暂停状态
                 Field pausedField = activityRecordClass.getDeclaredField("paused");
                 pausedField.setAccessible(true);
+
+                // 如果 Activity 没有被暂停（即在前台）
                 if (!pausedField.getBoolean(activityRecord)) {
+                    // 获取 activity 字段，即真正的 Activity 对象
                     Field activityField = activityRecordClass.getDeclaredField("activity");
                     activityField.setAccessible(true);
                     Activity activity = (Activity) activityField.get(activityRecord);
+
+                    // 返回当前处于前台的 Activity
                     return activity;
                 }
             }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-        } catch (NoSuchMethodException e2) {
-            e2.printStackTrace();
-        } catch (IllegalAccessException e3) {
-            e3.printStackTrace();
-        } catch (Exception e4) {
-            e4.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+        // 如果获取失败，返回 null
         return null;
     }
+
 
     public static List<View> getAllViews(View rootView) {
 
@@ -737,7 +839,7 @@ public class Utils {
             String[] data = new String[2];
             data[0] = "packageName";
             data[1] = packageName;
-            // sendBroadCast(action, data);
+            sendBroadCast(action, data);
         }).start();
         return true;
     }
@@ -767,24 +869,24 @@ public class Utils {
         }
     }
 
-    // public static void sendBroadCast(String action, String[] data) {
-    //     Intent intent = new Intent(action);
-    //     for (int i = 0; i < data.length; i++) {
-    //         String key = data[i];
-    //         String value = data[++i];
-    //         if (!TextUtils.isEmpty(key))
-    //             intent.putExtra(key, value);
-    //     }
-    //     LogUtil.e("sendBroadCast:" + intent + ",Data:" + Arrays.toString(data));
-    //     ThirdSDKImpl.getInstance().context.sendBroadcast(intent);
-    // }
+    public static void sendBroadCast(String action, String[] data) {
+        Intent intent = new Intent(action);
+        for (int i = 0; i < data.length; i++) {
+            String key = data[i];
+            String value = data[++i];
+            if (!TextUtils.isEmpty(key))
+                intent.putExtra(key, value);
+        }
+        LogUtil.e("sendBroadCast:" + intent + ",Data:" + Arrays.toString(data));
+        // ThirdSDKImpl.getInstance().context.sendBroadcast(intent);
+    }
 
 //     public static void putLogMessage(String key, String value) {
 //
 //         Class clazz = null;
 //         try {
 //             clazz = Class.forName("ninja.com.device.faker.manager.LmtServiceManager");
-//             Object lmtServiceManager = ReflectUtil.invoke(null, clazz, "get", null, null);
+//             // Object lmtServiceManager = ReflectUtil.invoke(null, clazz, "get", null, null);
 //             Method putLog = clazz.getDeclaredMethod("putLogMessage", String.class, String.class);
 // //            Method putLog = clazz.getDeclaredMethod("putClientLogMessage", String.class, String.class);
 //             putLog.setAccessible(true);
@@ -801,7 +903,7 @@ public class Utils {
             LogUtil.e(String.format("%s", "maxAd is null."));
             return;
         }
-        AdContentAnalysis.getAdContent(maxAd);
+        AdContentAnalyzer.getAdContent(maxAd);
     }
 
     private static Object getMaxAd(Context context) {
@@ -845,6 +947,41 @@ public class Utils {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public static String matchOuterBrackets(String input, char openBracket, char closeBracket) {
+        if (input == null || input.isEmpty()) {
+            return null;
+        }
+
+        Stack<Integer> stack = new Stack<>();
+        int startIndex = -1;
+        int endIndex = -1;
+
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+
+            if (c == openBracket) {
+                if (stack.isEmpty()) {
+                    startIndex = i; // 记录最外层开括号位置
+                }
+                stack.push(i);
+            } else if (c == closeBracket) {
+                if (!stack.isEmpty()) {
+                    int popped = stack.pop();
+                    if (stack.isEmpty()) {
+                        endIndex = i; // 记录最外层闭括号位置
+                        break; // 找到最外层括号对，结束循环
+                    }
+                }
+            }
+        }
+
+        if (startIndex != -1 && endIndex != -1 && startIndex < endIndex) {
+            return input.substring(startIndex, endIndex + 1);
+        }
+
+        return null;
     }
 
     public View getViews(List<View> viewList, String tag) {

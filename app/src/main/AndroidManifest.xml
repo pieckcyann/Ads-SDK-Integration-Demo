@@ -2,11 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!--SDK通用 必要权限-->
+    <!-- SDK通用 必要权限 -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <!--中国区SDK必要权限-->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- 中国区SDK必要权限 -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
@@ -15,28 +14,22 @@
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
-
-    <!--非中国区SDK必要权限-->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" /> <!-- 非中国区SDK必要权限 -->
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
 
-
     <application
-        android:name="com.xiaoyou.adsdkIntegration.demoapp.GlobalApplication"
+        android:name=".GlobalApplication"
         android:allowBackup="false"
         android:label="@string/app_name"
         android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        tools:targetApi="24">
-
+        android:theme="@style/AppTheme">
         <!-- Android 9 以上适配 -->
         <uses-library
             android:name="org.apache.http.legacy"
-            android:required="false" />
-
-        <!-- 中国区必要 -->
-        <!--<provider
+            android:required="false" /> <!-- 中国区必要 -->
+        <!--
+<provider
             android:name="com.bytedance.sdk.openadsdk.multipro.TTMultiProvider"
             android:authorities="${applicationId}.TTMultiProvider"
             android:exported="false" />
@@ -59,41 +52,43 @@
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/anythink_bk_gdt_file_path" />
-        </provider>-->
+        </provider>
+        -->
 
         <activity
-            android:name="com.xiaoyou.adsdkIntegration.demoapp.SplashActivity"
+            android:name=".SplashActivity"
             android:exported="true"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
             <meta-data
                 android:name="applovin.sdk.key"
                 android:value="9uHgeBwag3NXva9MC23ToO3q11Ve59bF1uwg4qGltdGmCQ7OSByFZ_3b1ZF7krMlkHQo5gXzIokVDsvg1rwbr-" />
-
         </activity>
         <activity
-            android:name="com.xiaoyou.adsdkIntegration.demoapp.MainActivity"
+            android:name=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.TopOnActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:parentActivityName="com.xiaoyou.adsdkIntegration.demoapp.MainActivity" />
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".ui.KwaiActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:parentActivityName="com.xiaoyou.adsdkIntegration.demoapp.MainActivity" />
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".ui.MAXActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:parentActivityName="com.xiaoyou.adsdkIntegration.demoapp.MainActivity" />
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".ui.BIGOActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:parentActivityName="com.xiaoyou.adsdkIntegration.demoapp.MainActivity" />
-
+            android:parentActivityName=".MainActivity" />
     </application>
+
 </manifest>
