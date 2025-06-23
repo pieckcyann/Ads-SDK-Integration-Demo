@@ -40,6 +40,7 @@ public class TopOn_RewardedAdLoader implements AdLoader {
             @Override
             public void onRewardedVideoAdLoaded() {
                 TopOn_RewardedAdLoader.notify("TopOn 激励视频加载完成");
+                // mRewardVideoAd.load(); // 自动预加载
             }
 
             @Override
@@ -54,6 +55,8 @@ public class TopOn_RewardedAdLoader implements AdLoader {
 
             @Override
             public void onRewardedVideoAdPlayStart(ATAdInfo atAdInfo) {
+
+                System.out.println("xxxxxxxxxxxxxxxxx");
                 // ATAdInfo可区分广告平台以及获取广告平台的广告位ID等
                 // 请参考 https://docs.toponad.com/#/zh-cn/android/android_doc/android_sdk_callback_access?id=callback_info
 

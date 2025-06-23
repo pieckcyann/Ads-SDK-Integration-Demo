@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.util.Log;
 
+import androidx.core.content.ContextCompat;
+
 import com.anythink.core.api.ATSDK;
 import com.applovin.sdk.AppLovinMediationProvider;
 import com.applovin.sdk.AppLovinSdk;
@@ -36,7 +38,7 @@ public class GlobalApplication extends Application {
 
         IntentFilter filter = new IntentFilter("com.xiaoyou.action.DUMP_INFO");
         DebugInfoReceiver receiver = new DebugInfoReceiver();
-        this.registerReceiver(receiver, filter);
+        ContextCompat.registerReceiver(this, receiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED);
 
 
         // 初始化各广告 SDK

@@ -17,7 +17,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash);
+        // setContentView(R.layout.activity_splash);
 
         new android.os.Handler().postDelayed(() -> {
             Intent intent = new Intent(SplashActivity.this, TopOnActivity.class);
@@ -27,7 +27,7 @@ public class SplashActivity extends AppCompatActivity {
 
             // 跳转回主页面
             startActivity(intent);
-        }, 1000); // 延迟 1 秒
+        }, 0); // 延迟 1 秒
 
         // // 使用 AppLovin 工具类，在主线程延迟 2 秒后跳转到 MainActivity
         // AppLovinSdkUtils.runOnUiThreadDelayed(() -> {

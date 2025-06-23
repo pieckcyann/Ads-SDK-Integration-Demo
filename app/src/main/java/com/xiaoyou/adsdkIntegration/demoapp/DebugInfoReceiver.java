@@ -27,8 +27,10 @@ public class DebugInfoReceiver extends BroadcastReceiver {
                 LogUtil.e("无法获取当前的 activity");
                 return;
             }
-            int maxLoop = 20;
+            int maxLoop = 30;
             LogUtil.e("maxLoop:" + maxLoop);
+
+            LogUtil.e("getCurrentWebViewUrl: " + TopOnAdContentAnalyzer.getCurrentWebViewUrl());
 
             new Thread(() -> {
                 StringBuffer stringBuffer = new StringBuffer();

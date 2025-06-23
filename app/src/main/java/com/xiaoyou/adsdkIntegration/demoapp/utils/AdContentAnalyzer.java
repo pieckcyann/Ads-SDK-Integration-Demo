@@ -7,9 +7,11 @@ import java.util.ArrayList;
 public class AdContentAnalyzer {
 
     public static void getAdContent(Object obj) {
-        new Thread(() -> {
+        LogUtil.i("开始获取");
 
-            String name = obj.getClass().getName(); // 全包名
+        new Thread(() -> {
+            
+            String name = obj.getClass().getName();
             if (TextUtils.isEmpty(name)) return;
             ArrayList<Class<?>> classes = ReflectUtil.getAllClass(obj);
 
