@@ -110,12 +110,12 @@ public class TopOnAdContentAnalyzer {
                 fieldValue = field.get(obj);
             } catch (IllegalAccessException ignore) {
             }
-            if (fieldValue == null
-                    || fieldValue instanceof View
-                    || fieldValue instanceof ViewGroup.LayoutParams
-                    || fieldValue instanceof OrientationEventListener
-            )
-                return;
+            // if (fieldValue == null
+            //         || fieldValue instanceof View
+            //         || fieldValue instanceof ViewGroup.LayoutParams
+            //         || fieldValue instanceof OrientationEventListener
+            // )
+            //     return;
             try {
                 String s = Integer.toHexString(fieldValue.hashCode());
                 if (list.contains(s)) {
@@ -164,19 +164,19 @@ public class TopOnAdContentAnalyzer {
 
     public static void printFields1(Class clazz, Object obj, int loop, int maxLoop, StringBuffer stringBuffer) {
         String name = clazz.getName();
-        if (
-                name.startsWith("android.content")
-                        || name.startsWith("android.app")
-                        || name.startsWith("java.lang.")
-                        || name.startsWith("org.json")
-                        || name.startsWith("android.view.")
-                        || name.startsWith("android.os.")
-                        || name.startsWith("android.window.")
-                        || name.startsWith("java.util")
-                        || name.startsWith("java.io")
-                        || "com.fyber.inneractive.sdk.config.enums.UnitDisplayType".equals(name)
-        )
-            return;
+        // if (
+        //         name.startsWith("android.content")
+        //                 || name.startsWith("android.app")
+        //                 || name.startsWith("java.lang.")
+        //                 || name.startsWith("org.json")
+        //                 || name.startsWith("android.view.")
+        //                 || name.startsWith("android.os.")
+        //                 || name.startsWith("android.window.")
+        //                 || name.startsWith("java.util")
+        //                 || name.startsWith("java.io")
+        //                 || "com.fyber.inneractive.sdk.config.enums.UnitDisplayType".equals(name)
+        // )
+        //     return;
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
             dealFields(obj, name, loop, maxLoop, stringBuffer, field);
@@ -374,7 +374,9 @@ public class TopOnAdContentAnalyzer {
             if ("Chartboost".equalsIgnoreCase(platform) || "Fyber".equalsIgnoreCase(platform)) {
                 if (str.startsWith("AppRequest")) {
                     LogUtil.i("识别 ChartBoost 内容");
-                    // LogUtil.d("str: " + str);
+                    LogUtil.d("str: " + str);
+
+                    String adType;
 
                     String packageName = "";
                     String ad_domain = "";
@@ -387,38 +389,61 @@ public class TopOnAdContentAnalyzer {
                     }
 
                     if ("true".equals(is_app)) {
+                        adType = AdContentConstant.PREFIX_APP;
                         // {% adm %}=
-                        String admValue = new String(Base64.decode(extractTemplateParamValue(str, "adm"), 0));
+                        String admValue = extractTemplateParamValue(str, "adm");
                         String admContent = new String(Base64.decode(admValue, 0));
 
-                        // For find click_through_url param
-                        Pattern urlPattern = Pattern.compile("click_through_url=([^&]+)");
+                        LogUtil.d("admContent = " + admContent); // 是否解码成功
+
+                        // if video ad : admContent use <VAST
+                        // if image ad : admContent use <<?xml
+
+                        // 视频类型
+                        Pattern urlPattern = Pattern.compile("&click_through_url=([^&]+)");
                         Matcher urlMatcher = urlPattern.matcher(admContent);
                         if (!urlMatcher.find()) {
+                            String urlValue = urlMatcher.group(1);
+
+                            LogUtil.d(urlValue);
+
+                            if (urlValue == null || !isMarketUrl(urlValue)) {
+                                LogUtil.e("匹配到的 click_through_url 参数值不合法");
+                                return sendPackageName("Chartboost", adType + packageName);
+                            }
+                            String urlContent = URLDecoder.decode(urlValue, "UTF-8");
+                            packageName = Uri.parse(urlContent).getQueryParameter("id");
+                            if (packageName == null || packageName.isEmpty()) {
+                                LogUtil.e("未能提取到有效的 id 参数");
+                                return sendPackageName("Chartboost", adType + packageName);
+                            }
+                            return sendPackageName("Chartboost", adType + packageName);
+
+                        } else {
                             LogUtil.e("未匹配到 click_through_url 参数");
-                            return sendPackageName("Chartboost", AdContentConstant.PREFIX_H5 + packageName);
+
+                            // {% ad_domain %}=
+                            ad_domain = extractTemplateParamValue(str, "ad_domain");
+                            if (ad_domain != null) {
+                                return sendPackageName("Chartboost", adType + ad_domain);
+                            }
+
+                            return sendPackageName("Chartboost", adType + packageName);
                         }
-                        String urlValue = urlMatcher.group(1);
-                        if (urlValue == null || !isMarketUrl(urlValue)) {
-                            LogUtil.e("匹配到的 click_through_url 参数值不合法");
-                            return sendPackageName("Chartboost", AdContentConstant.PREFIX_H5 + packageName);
-                        }
-                        String urlContent = URLDecoder.decode(urlValue, "UTF-8");
-                        packageName = Uri.parse(urlContent).getQueryParameter("id");
-                        return sendPackageName("Chartboost", AdContentConstant.PREFIX_APP + packageName);
                     }
 
                     if ("false".equals(is_app)) {
+                        adType = AdContentConstant.PREFIX_H5;
                         // {% ad_domain %}=
                         ad_domain = extractTemplateParamValue(str, "ad_domain");
                         if (ad_domain != null) {
-                            return sendPackageName("Chartboost", AdContentConstant.PREFIX_H5 + ad_domain);
+                            return sendPackageName("Chartboost", adType + ad_domain);
                         }
 
                         LogUtil.e("未匹配到 ad_domain 参数，开始尝试获取 h5 title");
 
                         // {% adm %}=
-                        String admValue = new String(Base64.decode(extractTemplateParamValue(str, "adm"), 0));
+                        String admValue = extractTemplateParamValue(str, "adm");
                         String admContent = new String(Base64.decode(admValue, 0));
 
                         // 一层解码
@@ -426,7 +451,7 @@ public class TopOnAdContentAnalyzer {
                         Element admElement = doc.getElementById("adm");
                         if (admElement == null) {
                             LogUtil.e("未找到 ID 为 'adm' 的元素");
-                            return sendPackageName("Chartboost", AdContentConstant.PREFIX_H5 + title);
+                            return sendPackageName("Chartboost", adType + title);
                         }
                         String textContent = admElement.text();
                         String decodedContent = new String(Base64.decode(textContent, 0));
@@ -436,24 +461,27 @@ public class TopOnAdContentAnalyzer {
                         Element scriptElement = doc2.select("script").first();
                         if (scriptElement == null) {
                             LogUtil.e("未找到 <script> 标签");
-                            return sendPackageName("Chartboost", AdContentConstant.PREFIX_H5 + title);
+                            return sendPackageName("Chartboost", adType + title);
                         }
                         String scriptContent = scriptElement.html();
                         Pattern pattern = Pattern.compile("var outbrain_widget_.*?__zemCreative__=(\\{.*?\\});", Pattern.DOTALL);
                         Matcher matcher = pattern.matcher(scriptContent);
                         if (!matcher.find()) {
                             LogUtil.e("未在 <script> 内容中找到 JSON 格式数据");
-                            return sendPackageName("Chartboost", AdContentConstant.PREFIX_H5 + title);
+                            return sendPackageName("Chartboost", adType + title);
                         }
                         String jsonString = matcher.group(1);
                         if (jsonString == null) {
                             LogUtil.e("<script> 的 JSON 数据为空");
-                            return sendPackageName("Chartboost", AdContentConstant.PREFIX_H5 + title);
+                            return sendPackageName("Chartboost", adType + title);
                         }
                         JSONObject jsonObject = new JSONObject(jsonString);
                         title = jsonObject.getString("title");
-                        return sendPackageName("Chartboost", AdContentConstant.PREFIX_H5 + title);
+                        return sendPackageName("Chartboost", adType + title);
                     }
+
+                    LogUtil.e("未识别到任何内容！");
+                    LogUtil.e("--------------------------------------------------------");
                     return false;
                 }
 

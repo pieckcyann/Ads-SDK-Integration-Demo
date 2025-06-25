@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.fyber.inneractive.sdk.bidder.adm.AdmParametersOuterClass$AdmParameters;
-import com.ironsource.mediationsdk.utils.IronSourceAES;
 import com.xiaoyou.adsdkIntegration.demoapp.constants.AdContentConstant;
 
 import org.json.JSONArray;
@@ -37,6 +36,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
@@ -324,13 +324,14 @@ public class MAXAdContentAnalyzer {
 
     public static boolean dealIronSource(String network_name, String bid_response) {
         try {
-            String decodeResult = IronSourceAES.decode("C38FB23A402222A0C17D34A92F971D1F", bid_response);
+            // String decodeResult = IronSourceAES.decode("C38FB23A402222A0C17D34A92F971D1F", bid_response);
+            String decodeResult = "";
             // LogUtil.e("bid_response: " + bid_response);
             //
             // LogUtil.e("decodeResult: " + decodeResult);
 
             JSONObject decodeJson = new JSONObject(decodeResult);
-            JSONObject waterfallJson = decodeJson.optJSONArray("waterfall").optJSONObject(0);
+            JSONObject waterfallJson = Objects.requireNonNull(decodeJson.optJSONArray("waterfall"), "waterfall is null").optJSONObject(0);
             JSONObject serverDataJson = waterfallJson.optJSONObject("serverData");
             String adMarkup = serverDataJson.optString("adMarkup");
             adMarkup = URLDecoder.decode(adMarkup);

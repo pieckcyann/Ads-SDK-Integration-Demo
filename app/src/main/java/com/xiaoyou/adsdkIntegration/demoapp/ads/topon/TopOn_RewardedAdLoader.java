@@ -61,10 +61,11 @@ public class TopOn_RewardedAdLoader implements AdLoader {
                 // 请参考 https://docs.toponad.com/#/zh-cn/android/android_doc/android_sdk_callback_access?id=callback_info
 
                 // 建议在此回调中调用load进行广告的加载，方便下一次广告的展示（不需要调用isAdReady()）
-                mRewardVideoAd.load();
 
                 LogUtil.i("Showing ad from: " + atAdInfo.getNetworkName());
                 AdContentAnalyzer.getAdContent(atAdInfo);
+
+                mRewardVideoAd.load();
             }
 
             @Override
@@ -103,13 +104,10 @@ public class TopOn_RewardedAdLoader implements AdLoader {
 
     @Override
     public void showAd() {
-        if (mRewardVideoAd != null) {
-            if (mRewardVideoAd.isAdReady()) {
-                mRewardVideoAd.show(activity);
-            } else {
-                TopOn_RewardedAdLoader.notify("TopOn 激励广告还没准备好");
-                initAd();
-            }
+        if (mRewardVideoAd.isAdReady()) {
+            mRewardVideoAd.show(activity);
+        } else {
+            TopOn_RewardedAdLoader.notify("TopOn 激励广告还没准备好");
         }
     }
 }

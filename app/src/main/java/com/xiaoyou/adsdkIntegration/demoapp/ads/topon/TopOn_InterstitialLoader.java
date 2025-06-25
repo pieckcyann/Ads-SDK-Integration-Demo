@@ -20,7 +20,7 @@ public class TopOn_InterstitialLoader implements AdLoader {
 
     public TopOn_InterstitialLoader(Activity activity) {
         this.activity = activity;
-        initAd(); // 自动预加载
+        initAd();
     }
 
     private static void notify(CharSequence text) {
@@ -50,15 +50,15 @@ public class TopOn_InterstitialLoader implements AdLoader {
 
             @Override
             public void onInterstitialAdShow(ATAdInfo adInfo) {
-                System.out.println("xxxxxxxxxxxxxxxxx");
 
                 // ATAdInfo可区分广告平台以及获取广告平台的广告位ID等
                 // 请参考 https://docs.TopOnad.com/#/zh-cn/android/android_doc/android_sdk_callback_access?id=callback_info
                 // 建议在此回调中调用load进行广告的加载，方便下一次广告的展示（不需要调用isAdReady()）
-                interstitialAd.load(); // 自动预加载
 
                 LogUtil.i("Showing ad from: " + adInfo.getNetworkName());
                 AdContentAnalyzer.getAdContent(adInfo);
+
+                interstitialAd.load(); // 自动预加载
             }
 
             @Override
@@ -85,21 +85,17 @@ public class TopOn_InterstitialLoader implements AdLoader {
 
     @Override
     public void loadAd() {
-        initAd();
+        interstitialAd.load();
     }
 
     @Override
     public void showAd() {
-        if (interstitialAd != null) {
-            // ATInterstitial.entryAdScenario(placementId, scenarioId);
-            if (interstitialAd.isAdReady()) {
-                // interstitialAd.show(activity, scenarioId);
-                interstitialAd.show(activity);
-            } else {
-                TopOn_InterstitialLoader.notify("TopOn 插屏广告还没准备好");
-
-                interstitialAd = new ATInterstitial(activity, placementId);
-            }
+        // ATInterstitial.entryAdScenario(placementId, scenarioId);
+        if (interstitialAd.isAdReady()) {
+            // interstitialAd.show(activity, scenarioId);
+            interstitialAd.show(activity);
+        } else {
+            TopOn_InterstitialLoader.notify("TopOn 插屏广告还没准备好");
         }
     }
 }
