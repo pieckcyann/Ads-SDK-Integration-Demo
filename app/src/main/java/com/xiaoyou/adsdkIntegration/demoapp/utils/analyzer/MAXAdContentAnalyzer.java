@@ -1,4 +1,4 @@
-package com.xiaoyou.adsdkIntegration.demoapp.utils;
+package com.xiaoyou.adsdkIntegration.demoapp.utils.analyzer;
 
 import android.app.Activity;
 import android.net.Uri;
@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 
 import com.fyber.inneractive.sdk.bidder.adm.AdmParametersOuterClass$AdmParameters;
 import com.xiaoyou.adsdkIntegration.demoapp.constants.AdContentConstant;
+import com.xiaoyou.adsdkIntegration.demoapp.utils.LogUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;

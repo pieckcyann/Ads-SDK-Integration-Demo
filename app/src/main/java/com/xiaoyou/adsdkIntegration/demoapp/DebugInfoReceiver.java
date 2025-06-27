@@ -8,7 +8,7 @@ import android.util.Base64;
 
 import com.xiaoyou.adsdkIntegration.demoapp.utils.FileUtil;
 import com.xiaoyou.adsdkIntegration.demoapp.utils.LogUtil;
-import com.xiaoyou.adsdkIntegration.demoapp.utils.TopOnAdContentAnalyzer;
+import com.xiaoyou.adsdkIntegration.demoapp.utils.analyzer.TopOnAdContentAnalyzer;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;

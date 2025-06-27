@@ -1,5 +1,8 @@
 package com.xiaoyou.adsdkIntegration.demoapp.ads.topon;
 
+import static com.xiaoyou.adsdkIntegration.demoapp.constants.KeysConfig.TOPON_INTER_PLACEMENT_ID;
+
+import android.annotation.SuppressLint;
 import android.app.Activity;
 
 import com.anythink.core.api.ATAdInfo;
@@ -7,19 +10,19 @@ import com.anythink.core.api.AdError;
 import com.anythink.interstitial.api.ATInterstitial;
 import com.anythink.interstitial.api.ATInterstitialListener;
 import com.xiaoyou.adsdkIntegration.demoapp.data.AdLoader;
-import com.xiaoyou.adsdkIntegration.demoapp.utils.AdContentAnalyzer;
 import com.xiaoyou.adsdkIntegration.demoapp.utils.LogUtil;
 import com.xiaoyou.adsdkIntegration.demoapp.utils.Notify;
+import com.xiaoyou.adsdkIntegration.demoapp.utils.analyzer.AdContentAnalyzer;
 
 public class TopOn_InterstitialLoader implements AdLoader {
 
     private static final String TAG = "topon inter";
+    @SuppressLint("StaticFieldLeak")
     private static Activity activity;
-    private final String placementId = "n683fba67f0cb4";
     private ATInterstitial interstitialAd;
 
     public TopOn_InterstitialLoader(Activity activity) {
-        this.activity = activity;
+        TopOn_InterstitialLoader.activity = activity;
         initAd();
     }
 
@@ -28,7 +31,7 @@ public class TopOn_InterstitialLoader implements AdLoader {
     }
 
     private void initAd() {
-        interstitialAd = new ATInterstitial(activity, placementId);
+        interstitialAd = new ATInterstitial(activity, TOPON_INTER_PLACEMENT_ID);
 
         interstitialAd.setAdListener(new ATInterstitialListener() {
             @Override

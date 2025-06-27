@@ -1,5 +1,8 @@
 package com.xiaoyou.adsdkIntegration.demoapp.ads.topon;
 
+import static com.xiaoyou.adsdkIntegration.demoapp.constants.KeysConfig.TOPON_REWARD_PLACEMENT_ID;
+
+import android.annotation.SuppressLint;
 import android.app.Activity;
 
 import com.anythink.core.api.ATAdInfo;
@@ -7,20 +10,20 @@ import com.anythink.core.api.AdError;
 import com.anythink.rewardvideo.api.ATRewardVideoAd;
 import com.anythink.rewardvideo.api.ATRewardVideoListener;
 import com.xiaoyou.adsdkIntegration.demoapp.data.AdLoader;
-import com.xiaoyou.adsdkIntegration.demoapp.utils.AdContentAnalyzer;
 import com.xiaoyou.adsdkIntegration.demoapp.utils.LogUtil;
 import com.xiaoyou.adsdkIntegration.demoapp.utils.Notify;
+import com.xiaoyou.adsdkIntegration.demoapp.utils.analyzer.AdContentAnalyzer;
 
 public class TopOn_RewardedAdLoader implements AdLoader {
 
     private static final String TAG = "topon reward";
 
+    @SuppressLint("StaticFieldLeak")
     private static Activity activity;
-    private final String placementId = "n683fba683e000";
     private ATRewardVideoAd mRewardVideoAd;
 
     public TopOn_RewardedAdLoader(Activity activity) {
-        this.activity = activity;
+        TopOn_RewardedAdLoader.activity = activity;
         initAd(); // 自动预加载
     }
 
@@ -30,7 +33,7 @@ public class TopOn_RewardedAdLoader implements AdLoader {
 
     private void initAd() {
         // 加载广告
-        mRewardVideoAd = new ATRewardVideoAd(activity, placementId);
+        mRewardVideoAd = new ATRewardVideoAd(activity, TOPON_REWARD_PLACEMENT_ID);
 
         mRewardVideoAd.load();
 
@@ -55,8 +58,6 @@ public class TopOn_RewardedAdLoader implements AdLoader {
 
             @Override
             public void onRewardedVideoAdPlayStart(ATAdInfo atAdInfo) {
-
-                System.out.println("xxxxxxxxxxxxxxxxx");
                 // ATAdInfo可区分广告平台以及获取广告平台的广告位ID等
                 // 请参考 https://docs.toponad.com/#/zh-cn/android/android_doc/android_sdk_callback_access?id=callback_info
 

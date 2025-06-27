@@ -1,6 +1,8 @@
-package com.xiaoyou.adsdkIntegration.demoapp.utils;
+package com.xiaoyou.adsdkIntegration.demoapp.utils.analyzer;
 
 import android.text.TextUtils;
+
+import com.xiaoyou.adsdkIntegration.demoapp.utils.ReflectUtil;
 
 import java.util.ArrayList;
 

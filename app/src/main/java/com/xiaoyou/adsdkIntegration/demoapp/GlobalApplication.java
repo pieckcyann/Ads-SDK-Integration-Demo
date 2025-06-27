@@ -1,5 +1,12 @@
 package com.xiaoyou.adsdkIntegration.demoapp;
 
+import static com.xiaoyou.adsdkIntegration.demoapp.constants.KeysConfig.BIGO_APP_ID;
+import static com.xiaoyou.adsdkIntegration.demoapp.constants.KeysConfig.KWAI_APP_ID;
+import static com.xiaoyou.adsdkIntegration.demoapp.constants.KeysConfig.KWAI_TOKEN;
+import static com.xiaoyou.adsdkIntegration.demoapp.constants.KeysConfig.MAX_SDK_KEY;
+import static com.xiaoyou.adsdkIntegration.demoapp.constants.KeysConfig.TOPON_APP_ID;
+import static com.xiaoyou.adsdkIntegration.demoapp.constants.KeysConfig.TOPON_APP_KEY;
+
 import android.app.Application;
 import android.content.Context;
 import android.content.IntentFilter;
@@ -22,19 +29,17 @@ import sg.bigo.ads.BigoAdSdk;
 import sg.bigo.ads.api.AdConfig;
 
 public class GlobalApplication extends Application {
-    // private static final String MAX_SDK_KEY = "9uHgeBwag3NXva9MC23ToO3q11Ve59bF1uwg4qGltdGmCQ7OSByFZ_3b1ZF7krMlkHQo5gXzIokVDsvg1rwbr-";
-    // private static final String MAX_SDK_KEY = "SvB0hiPF_Z-rsg8trw4XNvoe4BHvdK7BOJzyqmpZFy7PZ7dyvVPtU2GOv8lWgVbmQCcTEz_xTTos9kMT9sTZMg";
-    private static final String MAX_SDK_KEY = "n0PnK0ipoeVx_LS1vCllzQ8nBIuLulhKEXsq_78fiv1a41D_Gs19pa7HDBxzNMN2TMmRMF1uv6RaTKkfzi8aLE"; // com.chenfine.flowing.chagerater
-    private static final String TOPON_APP_ID = "h67d39ef1bbfe7";
-    private static final String TOPON_APP_KEY = "a119b998c7158dde7ad7cc134365c7824";
-    private static final String KWAI_APP_ID = "899999";
-    private static final String KWAI_TOKEN = "EaCw0AipSYyvf3E7";
-    private static final String BIGO_APP_ID_01 = "10182906"; // 竖版广告
-    private static final String BIGO_APP_ID_02 = "10247107"; // 横版广告
+
+    private static GlobalApplication instance;
+
+    public static Context getAppContext() {
+        return instance.getApplicationContext();
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
+        instance = this;
 
         IntentFilter filter = new IntentFilter("com.xiaoyou.action.DUMP_INFO");
         DebugInfoReceiver receiver = new DebugInfoReceiver();
@@ -116,7 +121,7 @@ public class GlobalApplication extends Application {
 
     private void initBigoSdk() {
         AdConfig config = new AdConfig.Builder()
-                .setAppId(BIGO_APP_ID_01)
+                .setAppId(BIGO_APP_ID)
                 // .setDebug(BuildConfig.DEBUG)
                 // .setChannel("<your-app-channel>")
                 // .setAge("<your-app-user-age>")

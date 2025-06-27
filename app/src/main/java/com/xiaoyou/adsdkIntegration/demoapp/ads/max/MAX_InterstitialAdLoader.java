@@ -12,9 +12,9 @@ import com.applovin.mediation.MaxAdRevenueListener;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.ads.MaxInterstitialAd;
 import com.xiaoyou.adsdkIntegration.demoapp.data.AdLoader;
-import com.xiaoyou.adsdkIntegration.demoapp.utils.AdContentAnalyzer;
 import com.xiaoyou.adsdkIntegration.demoapp.utils.LogUtil;
 import com.xiaoyou.adsdkIntegration.demoapp.utils.Notify;
+import com.xiaoyou.adsdkIntegration.demoapp.utils.analyzer.AdContentAnalyzer;
 
 import java.util.concurrent.TimeUnit;
 

@@ -14,8 +14,8 @@ import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.MaxRewardedAdListener;
 import com.applovin.mediation.ads.MaxRewardedAd;
 import com.xiaoyou.adsdkIntegration.demoapp.data.AdLoader;
-import com.xiaoyou.adsdkIntegration.demoapp.utils.AdContentAnalyzer;
 import com.xiaoyou.adsdkIntegration.demoapp.utils.LogUtil;
+import com.xiaoyou.adsdkIntegration.demoapp.utils.analyzer.AdContentAnalyzer;
 
 import java.util.concurrent.TimeUnit;
 
