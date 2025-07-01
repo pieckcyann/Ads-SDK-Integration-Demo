@@ -8,16 +8,31 @@ android {
 
     defaultConfig {
         // applicationId "com.mahjong.solitaire.tile.pair.match"
+
         applicationId "jp.co.goodroid.hyper.balljumper"
-        // applicationId "com.bubble.shooter.family"
-        //
-        // applicationId "com.horus.sky.defense"
-        // applicationId "com.chenfine.flowing.chagerater"
         minSdkVersion 24
         targetSdk 34
         versionCode 1
         versionName "1.0.1"
-        //
+
+        // applicationId "com.kaidagames.tiethemdown"
+        // minSdkVersion 22
+        // targetSdk 34
+        // versionCode 3
+        // versionName "1.0.3"
+
+        // applicationId "com.kagames.crazycaravan"
+        // minSdkVersion 24
+        // targetSdk 34
+        // versionCode 3
+        // versionName "1.0.3"
+
+        // applicationId "com.kaidagames.jumpupandup"
+        // minSdkVersion 24
+        // targetSdk 34
+        // versionCode 3
+        // versionName "1.0.3"
+
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -115,7 +130,8 @@ dependencies {
     api "com.unity3d.ads:unity-ads:4.14.0"
 
     // Ironsource
-    // api "com.anythink.sdk:adapter-tpn-ironsource:6.4.69"
+    // api "com.anythink.sdk:adapter-tpn-ironsource:6.4.69" // jp.co.goodroid.hyper.balljumper
+    // api "com.anythink.sdk:adapter-tpn-ironsource:6.4.27" // com.kaidagames.jumpupandup
     // api "com.ironsource.sdk:mediationsdk:8.7.0"
     // api "com.google.android.gms:play-services-appset:16.0.2"
     // api "com.google.android.gms:play-services-ads-identifier:18.0.1"
@@ -140,7 +156,8 @@ dependencies {
     api "androidx.recyclerview:recyclerview:1.1.0"
 
     // Chartboost
-    api "com.anythink.sdk:adapter-tpn-chartboost:6.4.69"
+    api "com.anythink.sdk:adapter-tpn-chartboost:6.4.69" // jp.co.goodroid.hyper.balljumper
+    // api "com.anythink.sdk:adapter-tpn-chartboost:6.4.27" //  com.kaidagames.jumpupandup
     api "com.chartboost:chartboost-sdk:9.8.2"
     api "com.chartboost:chartboost-mediation-sdk:4.9.2"
     api "com.chartboost:chartboost-mediation-adapter-chartboost:4.9.8.1.0"

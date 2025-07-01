@@ -64,6 +64,8 @@ public class TopOnAdContentAnalyzer {
         for (Object fieldValue : fieldValues) {
             String data = fieldValue + "";
 
+            // LogUtil.d(getCurrentActivity().toString());
+
             // "ChartboostATInterstitialAdapter"、"ChartboostATRewardedVideoAdapter"
             if (containsIgnoreCase(data, CHARTBOOST)) {
                 return TopOnAdContentAnalyzer.getPackageNameE(getCurrentActivity(), CHARTBOOST, 0, 13);
@@ -172,19 +174,19 @@ public class TopOnAdContentAnalyzer {
 
     public static void printFields1(Class clazz, Object obj, int loop, int maxLoop, StringBuffer stringBuffer) {
         String name = clazz.getName();
-        // if (
-        //         name.startsWith("android.content")
-        //                 || name.startsWith("android.app")
-        //                 || name.startsWith("java.lang.")
-        //                 || name.startsWith("org.json")
-        //                 || name.startsWith("android.view.")
-        //                 || name.startsWith("android.os.")
-        //                 || name.startsWith("android.window.")
-        //                 || name.startsWith("java.util")
-        //                 || name.startsWith("java.io")
-        //                 || "com.fyber.inneractive.sdk.config.enums.UnitDisplayType".equals(name)
-        // )
-        //     return;
+        if (
+                name.startsWith("android.content")
+                        || name.startsWith("android.app")
+                        || name.startsWith("java.lang.")
+                        || name.startsWith("org.json")
+                        || name.startsWith("android.view.")
+                        || name.startsWith("android.os.")
+                        || name.startsWith("android.window.")
+                        || name.startsWith("java.util")
+                        || name.startsWith("java.io")
+                        || "com.fyber.inneractive.sdk.config.enums.UnitDisplayType".equals(name)
+        )
+            return;
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
             dealFields(obj, name, loop, maxLoop, stringBuffer, field);
@@ -396,83 +398,10 @@ public class TopOnAdContentAnalyzer {
             }
 
             if (CHARTBOOST.equalsIgnoreCase(platform) || FYBER.equalsIgnoreCase(platform)) {
-                String adType = "";
-                String adInfo = "";
-
-                if (str.startsWith("AppRequest")) {
-                    LogUtil.i("识别 " + platform + " 内容");
-                    // LogUtil.i("以下为测试内容");
-                    // str = readLogFromAssets();
-
-                    // {% is_app %}=
-                    String is_app = extractTemplateParamValue(str, "is_app");
-                    if (is_app == null) {
-                        LogUtil.e("未匹配到 is_app 参数");
-                        return sendPackageName("Chartboost", "");
-                    }
-
-                    if ("true".equals(is_app)) {
-                        adType = PREFIX_APP;
-                        // {% adm %}=
-                        String admValue = extractTemplateParamValue(str, "adm");
-                        String admContent = new String(Base64.decode(admValue, 0));
-
-                        // if video app ad : admContent startWith <VAST
-                        // if image ad : admContent startWith use <?xml
-
-                        // 首先找 click_through_url (视频广告)
-                        Pattern urlPattern = Pattern.compile("&click_through_url=([^&]+)");
-                        Matcher urlMatcher = urlPattern.matcher(admContent);
-                        if (urlMatcher.find()) {
-                            String urlValue = urlMatcher.group(1);
-
-                            adInfo = extractParamFromUrl(urlValue, "id");
-                            if (!isMarketUrl(urlValue) || adInfo.isEmpty()) {
-                                LogUtil.e("未能提取到有效的 id 参数");
-                            }
-
-                        } else {
-                            LogUtil.e("未匹配到 click_through_url 参数");
-
-                            // 尝试二层解码找 clickUrl (com.moe.chibiprincess)
-                            adInfo = extractValueFromDoubleDecodedAdm(str, "clickUrl");
-
-                            // 暂时使用 {% ad_domain %} 替代 (com.zhiliaoapp.musically、com.wave.keyboard.theme.tigeranimatedkeyboard)
-                            if (adInfo.isEmpty() || isMarketUrl(adInfo)) {
-                                adInfo = extractTemplateParamValue(str, "ad_domain");
-
-                                if ("tiktok.com".equalsIgnoreCase(adInfo)) {
-                                    adInfo = "com.zhiliaoapp.musically";
-                                } else if ("wave.studio".equalsIgnoreCase(adInfo)) {
-                                    adInfo = "com.wave.keyboard.theme.tigeranimatedkeyboard";
-                                }
-                            }
-                        }
-                    }
-
-                    if ("false".equals(is_app)) {
-                        adType = PREFIX_H5;
-                        // 首先找 {% ad_domain %}
-                        adInfo = extractTemplateParamValue(str, "ad_domain");
-
-                        // 再尝试二层解码找 title
-                        if (adInfo.isEmpty()) {
-                            LogUtil.e("未匹配到 ad_domain 参数，开始尝试获取 title");
-                            adInfo = extractValueFromDoubleDecodedAdm(str, "title");
-                        }
-                    }
-
-                    if (adType.isEmpty()) {
-                        LogUtil.e("最终未找到广告的类型");
-                        LogUtil.d("str: " + str);
-                    }
-
-                    if (adInfo.isEmpty()) {
-                        LogUtil.e("最终未找到 " + adType + " 类型广告的" + (PREFIX_APP.equals(adType) ? "包名" : "网址"));
-                        LogUtil.d("str: " + str);
-                    }
-
-                    return sendPackageName(platform, adType + adInfo);
+                // LogUtil.i("以下为测试内容x");
+                // str = readLogFromAssets();
+                if (dealChartBoost(platform, str)) {
+                    return true;
                 }
 
                 if (FYBER.equalsIgnoreCase(platform)) {
@@ -672,6 +601,81 @@ public class TopOnAdContentAnalyzer {
         return getPackageName(fieldValue, platform, loop, maxLoop, map);
     }
 
+    // ChartBoost & Fyber
+    public static boolean dealChartBoost(String platform, String str) {
+        if (!str.startsWith("AppRequest")) return false;
+        LogUtil.i("识别 " + platform + " 内容");
+        String adType = "";
+        String adInfo = "";
+        String is_app = extractTemplateParamValue(str, "is_app");
+
+        if ("true".equals(is_app)) {
+            adType = PREFIX_APP;
+            do {
+                String admValue = extractTemplateParamValue(str, "adm");
+                String admContent = new String(Base64.decode(admValue, 0));
+
+                // 尝试找 &click_through_url=
+                String urlValue = extractKeyValue(admContent, "click_through_url");
+                adInfo = extractParamFromUrl(urlValue, "id");
+                LogUtil.i("尝试 click_through_url " + (!adInfo.isEmpty() ? "成功" : "失败"));
+                if (!adInfo.isEmpty()) break;
+
+                // 尝试找 &pkg_name=
+                adInfo = extractKeyValue(admContent, "pkg_name");
+                LogUtil.i("尝试 pkg_name " + (!adInfo.isEmpty() ? "成功" : "失败"));
+                if (!adInfo.isEmpty()) break;
+
+                // 尝试找 <ClickThrough><![CDATA[ (com.rofi.weaponsounds)
+                String clickThroughUrl = extractTagCdata(admContent, "ClickThrough");
+                adInfo = extractParamFromUrl(clickThroughUrl, "id");
+                LogUtil.i("尝试 ClickThrough " + (!adInfo.isEmpty() ? "成功" : "失败"));
+                if (!adInfo.isEmpty()) break;
+
+                // 尝试 二层解码找 clickUrl (com.moe.chibiprincess)
+                String clickUrl = extractValueFromDoubleDecodedAdm(str, "clickUrl");
+                adInfo = extractParamFromUrl(clickUrl, "id");
+
+                LogUtil.i("尝试 二层解码找 clickUrl " + (!adInfo.isEmpty() ? "成功" : "失败"));
+                if (!adInfo.isEmpty()) break;
+
+                // 暂时使用 {% ad_domain %} 替代 (com.zhiliaoapp.musically、com.wave.keyboard.theme.tigeranimatedkeyboard)
+                // adInfo = extractTemplateParamValue(str, "ad_domain");
+                //
+                // if ("tiktok.com".equalsIgnoreCase(adInfo)) {
+                //     adInfo = "com.zhiliaoapp.musically";
+                // } else if ("wave.studio".equalsIgnoreCase(adInfo)) {
+                //     adInfo = "com.wave.keyboard.theme.tigeranimatedkeyboard";
+                // }
+
+            } while (false);
+        }
+
+        if ("false".equals(is_app)) {
+            adType = PREFIX_H5;
+            // 首先找 {% ad_domain %}
+            adInfo = extractTemplateParamValue(str, "ad_domain");
+
+            // 再二层解码找 title 替代
+            if (adInfo.isEmpty()) {
+                LogUtil.e("未匹配到 ad_domain 参数，开始尝试获取 title");
+                adInfo = extractValueFromDoubleDecodedAdm(str, "title");
+            }
+        }
+
+        if (adType.isEmpty()) {
+            LogUtil.e("最终未找到广告的类型");
+            LogUtil.d("str: " + str);
+        }
+
+        if (adInfo.isEmpty()) {
+            LogUtil.e("最终未找到 " + adType + " 类型广告的" + (PREFIX_APP.equals(adType) ? "包名" : "网址"));
+            LogUtil.d("str: " + str);
+        }
+
+        return sendPackageName(platform, adType + adInfo);
+    }
+
     public static String extractTemplateParamValue(String str, String key) {
         if (str == null || key == null || key.isEmpty()) return "";
 
@@ -688,66 +692,31 @@ public class TopOnAdContentAnalyzer {
         return "";
     }
 
-
-    // return adInfo
-    private static String extractValueFromDoubleDecodedAdm(String str, String key) {
-        String adInfo = "";
-        try {
-            // {% adm %}=
-            String admValue = extractTemplateParamValue(str, "adm");
-
-            // 解码第一层 Base64
-            String admContent = new String(Base64.decode(admValue, 0));
-            Document doc = Jsoup.parse(admContent);
-            Element admElement = doc.getElementById("adm");
-            if (admElement == null) {
-                LogUtil.e("未找到 ID 为 'adm' 的元素");
-                return "";
-            }
-            String textContent = admElement.text();
-
-            // 解码第二层 Base64
-            String decodedContent = new String(Base64.decode(textContent, 0));
-
-            Pattern pattern = Pattern.compile("\"" + Pattern.quote(key) + "\":\"(.*?)\"");
-            Matcher matcher = pattern.matcher(decodedContent);
-
-            if (!matcher.find()) {
-                LogUtil.e("未在第二层解码后的数据中找到 " + key + " 的值。");
-                return "";
-            }
-
-            String keyValue = matcher.group(1);
-            if ("title".equalsIgnoreCase(key)) {
-                adInfo = keyValue;
-            } else if ("clickUrl".equalsIgnoreCase(key)) {
-                adInfo = extractParamFromUrl(keyValue, "id");
-            }
-
-            return adInfo;
-
-        } catch (Exception e) {
-            LogUtil.e("解析过程中出错: " + e.getMessage());
-            return "";
-        }
-    }
-
-    private static String extractParamFromUrl(String url, String key) {
+    public static String extractParamFromUrl(String url, String key) {
         if (url == null || url.isEmpty()) return "";
+        if (key == null || key.isEmpty()) return "";
 
-        String urlContent;
-        try {
-            urlContent = URLDecoder.decode(url, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+        // 判断是否包含 %xx 形式的编码
+        boolean needsDecode = false;
+        Pattern pattern = Pattern.compile("%[0-9a-fA-F]{2}");
+        Matcher matcher = pattern.matcher(url);
+        if (matcher.find()) needsDecode = true;
+
+        String urlToParse = url;
+        if (needsDecode) {
+            try {
+                urlToParse = URLDecoder.decode(url, "UTF-8");
+            } catch (UnsupportedEncodingException | IllegalArgumentException e) {
+                LogUtil.e("URL 解码失败：" + e.getMessage());
+                urlToParse = url; // 解码失败就用原始 URL
+            }
         }
 
-        Uri uri = Uri.parse(urlContent);
+        Uri uri = Uri.parse(urlToParse);
         String value = uri.getQueryParameter(key);
 
-        return value != null ? value : ""; // ✅ 你可能忘了这行
+        return value != null ? value : "";
     }
-
 
     public static boolean getPackageNameE(Object obj, String platform, int loop, int maxLoop) {
         list.clear();
@@ -1008,12 +977,6 @@ public class TopOnAdContentAnalyzer {
     public static boolean isMarketUrl(String url) {
         return url == null || url.isEmpty() || url.contains("play.google.com") || url.contains("market:") || url.contains("market.android.com");
     }
-//    public static boolean sendWebPageUrl(String platform, String url) {
-//        long temp = System.currentTimeMillis();
-//        if (temp - sendTime < 1000)
-//            return false;
-//        sendTime = temp;
-//        LogUtil.e("获取到网页广告内容，当前平台：" + platform + ",网页链接：" + url);
 
     public static void sendBroadCast(String action, String[] data) {
         Intent intent = new Intent(action);
@@ -1036,21 +999,12 @@ public class TopOnAdContentAnalyzer {
         }
         AdContentAnalyzer.getAdContent(maxAd);
     }
-
-//     public static void putLogMessage(String key, String value) {
-//
-//         Class clazz = null;
-//         try {
-//             clazz = Class.forName("ninja.com.device.faker.manager.LmtServiceManager");
-//             // Object lmtServiceManager = ReflectUtil.invoke(null, clazz, "get", null, null);
-//             Method putLog = clazz.getDeclaredMethod("putLogMessage", String.class, String.class);
-// //            Method putLog = clazz.getDeclaredMethod("putClientLogMessage", String.class, String.class);
-//             putLog.setAccessible(true);
-//             putLog.invoke(lmtServiceManager, key, value);
-//         } catch (Exception e) {
-//             e.printStackTrace();
-//         }
-//     }
+//    public static boolean sendWebPageUrl(String platform, String url) {
+//        long temp = System.currentTimeMillis();
+//        if (temp - sendTime < 1000)
+//            return false;
+//        sendTime = temp;
+//        LogUtil.e("获取到网页广告内容，当前平台：" + platform + ",网页链接：" + url);
 
     private static Object getMaxAd(Context context) {
         try {
@@ -1095,7 +1049,97 @@ public class TopOnAdContentAnalyzer {
         }
     }
 
-    public static String matchOuterBrackets(String input, char openBracket, char closeBracket) {
+//     public static void putLogMessage(String key, String value) {
+//
+//         Class clazz = null;
+//         try {
+//             clazz = Class.forName("ninja.com.device.faker.manager.LmtServiceManager");
+//             // Object lmtServiceManager = ReflectUtil.invoke(null, clazz, "get", null, null);
+//             Method putLog = clazz.getDeclaredMethod("putLogMessage", String.class, String.class);
+// //            Method putLog = clazz.getDeclaredMethod("putClientLogMessage", String.class, String.class);
+//             putLog.setAccessible(true);
+//             putLog.invoke(lmtServiceManager, key, value);
+//         } catch (Exception e) {
+//             e.printStackTrace();
+//         }
+//     }
+
+    private static String extractValueFromDoubleDecodedAdm(String str, String key) {
+        String adInfo = "";
+        try {
+            // {% adm %}=
+            String admValue = extractTemplateParamValue(str, "adm");
+
+            // 解码第一层 Base64
+            String admContent = new String(Base64.decode(admValue, 0));
+            Document doc = Jsoup.parse(admContent);
+            Element admElement = doc.getElementById("adm");
+            if (admElement == null) {
+                LogUtil.e("未找到 ID 为 'adm' 的元素");
+                return "";
+            }
+            String textContent = admElement.text();
+
+            // 解码第二层 Base64
+            String decodedContent = new String(Base64.decode(textContent, 0));
+            Pattern pattern = Pattern.compile("\"" + Pattern.quote(key) + "\":\"(.*?)\"");
+            Matcher matcher = pattern.matcher(decodedContent);
+            if (!matcher.find()) {
+                LogUtil.e("未在第二层解码后的数据中找到 " + key + " 的值。");
+                return "";
+            }
+
+            String keyValue = matcher.group(1);
+            if ("title".equalsIgnoreCase(key)) {
+                adInfo = keyValue;
+            } else if ("clickUrl".equalsIgnoreCase(key)) {
+                adInfo = extractParamFromUrl(keyValue, "id");
+            }
+
+            return adInfo;
+
+        } catch (Exception e) {
+            LogUtil.e("解析过程中出错: " + e.getMessage());
+            return "";
+        }
+    }
+
+    public static String extractKeyValue(String string, String key) {
+        if (string == null || key == null || key.isEmpty()) {
+            return "";
+        }
+
+        // 构造正则：&key=([^&"\s<]*)
+        String regex = "&" + Pattern.quote(key) + "=([^&\"\\s<]*)";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(string);
+
+        if (matcher.find()) {
+            return matcher.group(1); // 返回第一个匹配到的值
+        }
+
+        return "";
+    }
+
+
+    public static String extractTagCdata(String input, String tagName) {
+        if (input == null || input.isEmpty()) return "";
+        if (tagName == null || tagName.isEmpty()) return "";
+
+        // 构造正则：匹配指定标签名的 <![CDATA[...]]> 内容
+        String regex = "<" + Pattern.quote(tagName) + ">\\s*<!\\[CDATA\\[(.*?)]]>\\s*</" + Pattern.quote(tagName) + ">";
+        Pattern pattern = Pattern.compile(regex, Pattern.DOTALL); // DOTALL: 多行匹配
+        Matcher matcher = pattern.matcher(input);
+
+        if (matcher.find()) {
+            return matcher.group(1); // 返回 CDATA 中的内容
+        }
+
+        return "";
+    }
+
+
+    public String matchOuterBrackets(String input, char openBracket, char closeBracket) {
         if (input == null || input.isEmpty()) {
             return null;
         }

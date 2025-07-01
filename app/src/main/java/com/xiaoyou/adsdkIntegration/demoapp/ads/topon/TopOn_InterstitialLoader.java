@@ -24,6 +24,26 @@ public class TopOn_InterstitialLoader implements AdLoader {
     public TopOn_InterstitialLoader(Activity activity) {
         TopOn_InterstitialLoader.activity = activity;
         initAd();
+
+
+        // new Thread(() -> {
+        //     String appName = "RoaringTigerLiveWallpaper";
+        //     String packageName = null;
+        //
+        //     try {
+        //         packageName = getPackageNameFromPlay(appName);
+        //
+        //         if (packageName != null) {
+        //             LogUtil.i("包名为: " + packageName);
+        //         } else {
+        //             LogUtil.e("没找到包名");
+        //         }
+        //     } catch (Exception e) {
+        //         LogUtil.e("异常: " + e.getMessage());
+        //     }
+        // }).start();
+
+        //
     }
 
     private static void notify(CharSequence text) {

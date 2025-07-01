@@ -2,6 +2,7 @@ package com.xiaoyou.adsdkIntegration.demoapp.constants;
 
 public class KeysConfig {
 
+
     /**
      * MAX
      */
@@ -21,11 +22,31 @@ public class KeysConfig {
     public static final String TOPON_INTER_PLACEMENT_ID = "n683fba67f0cb4";
     public static final String TOPON_REWARD_PLACEMENT_ID = "n683fba683e000";
 
+    // com.movingchess.chessgames
+    // public static final String TOPON_APP_ID = "h67f63684622da";
+    // public static final String TOPON_APP_KEY = "a7dd39415230a3d03c4d1005e68dea4cd";
+    // public static final String TOPON_INTER_PLACEMENT_ID = "n67f639439f098";
+    // public static final String TOPON_REWARD_PLACEMENT_ID = "n67f639414ede9";
+
+    // com.kagames.crazycaravan
+    // public static final String TOPON_APP_ID = "h67f635f054d75";
+    // public static final String TOPON_APP_KEY = "a9e1f72924cc671e96947763da0e93a36";
+    // public static final String TOPON_INTER_PLACEMENT_ID = "n67f6393e58c74";
+    // public static final String TOPON_REWARD_PLACEMENT_ID = "n67f6393c80d52";
+
+    // com.kaidagames.jumpupandup
+    // public static final String TOPON_APP_ID = "h67f6368563693";
+    // public static final String TOPON_APP_KEY = "aa775bab21c8b7163de24cc6eba6e4b98";
+    // public static final String TOPON_INTER_PLACEMENT_ID = "n67f63949cd7d8";
+    // public static final String TOPON_REWARD_PLACEMENT_ID = "n67f63949308e5";
+
+
     /**
      * KWAI
      */
     public static final String KWAI_APP_ID = "899999";
     public static final String KWAI_TOKEN = "EaCw0AipSYyvf3E7";
+
 
     /**
      * BIGO

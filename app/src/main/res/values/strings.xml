@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Ball Jumper</string>
+    <!--    <string name="app_name">Moving Chess Pieces</string>-->
+    <!--    <string name="app_name">Crazy Caravan</string>-->
+    <!--    <string name="app_name">Jump up and u</string>-->
 
     <string name="activity_interstitial">Interstitial Ads</string>
     <string name="activity_app_open">App Open Ads</string>
