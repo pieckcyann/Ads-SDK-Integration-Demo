@@ -56,8 +56,6 @@ import sg.bigo.ads.BigoAdSdk;
 public class MAXAdContentAnalyzer {
     private static HashMap<String, Object> map = new HashMap<>();
 
-    // 获取一个对象所属的类以及其所有父类的 Class 列表
-
 
     public static boolean getMaxAdContent(Class<?> clazz, Object obj) {
         Field[] fields = new Field[0];

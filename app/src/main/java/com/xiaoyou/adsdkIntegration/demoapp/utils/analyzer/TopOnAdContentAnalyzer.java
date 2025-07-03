@@ -28,6 +28,7 @@ import com.xiaoyou.adsdkIntegration.demoapp.utils.FileUtil;
 import com.xiaoyou.adsdkIntegration.demoapp.utils.LogUtil;
 import com.xiaoyou.adsdkIntegration.demoapp.utils.ReflectUtil;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,6 +50,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
@@ -398,7 +400,6 @@ public class TopOnAdContentAnalyzer {
             }
 
             if (CHARTBOOST.equalsIgnoreCase(platform) || FYBER.equalsIgnoreCase(platform)) {
-                // LogUtil.i("以下为测试内容x");
                 // str = readLogFromAssets();
                 if (dealChartBoost(platform, str)) {
                     return true;
@@ -570,10 +571,9 @@ public class TopOnAdContentAnalyzer {
                 }
 
             }
-        } catch (
-                Throwable e) {
-
+        } catch (Throwable ignored) {
         }
+
         if (fieldValue instanceof SparseArray) {
             SparseArray temp = (SparseArray) fieldValue;
             for (int i = 0; i < temp.size(); i++) {
@@ -605,22 +605,23 @@ public class TopOnAdContentAnalyzer {
     public static boolean dealChartBoost(String platform, String str) {
         if (!str.startsWith("AppRequest")) return false;
         LogUtil.i("识别 " + platform + " 内容");
+
         String adType = "";
         String adInfo = "";
         String is_app = extractTemplateParamValue(str, "is_app");
 
-        if ("true".equals(is_app)) {
-            adType = PREFIX_APP;
-            do {
-                String admValue = extractTemplateParamValue(str, "adm");
-                String admContent = new String(Base64.decode(admValue, 0));
+        do {
+            if ("true".equalsIgnoreCase(is_app)) {
+                adType = PREFIX_APP;
+                // String admValue = extractTemplateParamValue(str, "adm");
+                String admContent = new String(Base64.decode(extractTemplateParamValue(str, "adm"), Base64.DEFAULT));
 
                 // 尝试找 &click_through_url=
                 String urlValue = extractKeyValue(admContent, "click_through_url");
                 adInfo = extractParamFromUrl(urlValue, "id");
                 LogUtil.i("尝试 click_through_url " + (!adInfo.isEmpty() ? "成功" : "失败"));
                 if (!adInfo.isEmpty()) break;
-
+                
                 // 尝试找 &pkg_name=
                 adInfo = extractKeyValue(admContent, "pkg_name");
                 LogUtil.i("尝试 pkg_name " + (!adInfo.isEmpty() ? "成功" : "失败"));
@@ -635,7 +636,6 @@ public class TopOnAdContentAnalyzer {
                 // 尝试 二层解码找 clickUrl (com.moe.chibiprincess)
                 String clickUrl = extractValueFromDoubleDecodedAdm(str, "clickUrl");
                 adInfo = extractParamFromUrl(clickUrl, "id");
-
                 LogUtil.i("尝试 二层解码找 clickUrl " + (!adInfo.isEmpty() ? "成功" : "失败"));
                 if (!adInfo.isEmpty()) break;
 
@@ -647,21 +647,20 @@ public class TopOnAdContentAnalyzer {
                 // } else if ("wave.studio".equalsIgnoreCase(adInfo)) {
                 //     adInfo = "com.wave.keyboard.theme.tigeranimatedkeyboard";
                 // }
+            }
 
-            } while (false);
-        }
+            if ("false".equalsIgnoreCase(is_app)) {
+                adType = PREFIX_H5;
 
-        if ("false".equals(is_app)) {
-            adType = PREFIX_H5;
-            // 首先找 {% ad_domain %}
-            adInfo = extractTemplateParamValue(str, "ad_domain");
+                // 先找 {% ad_domain %}
+                adInfo = extractTemplateParamValue(str, "ad_domain");
+                LogUtil.i("尝试 ad_domain " + (!adInfo.isEmpty() ? "成功" : "失败"));
+                if (!adInfo.isEmpty()) break;
 
-            // 再二层解码找 title 替代
-            if (adInfo.isEmpty()) {
-                LogUtil.e("未匹配到 ad_domain 参数，开始尝试获取 title");
+                // 再用二层解码找到 title 替代
                 adInfo = extractValueFromDoubleDecodedAdm(str, "title");
             }
-        }
+        } while (false);
 
         if (adType.isEmpty()) {
             LogUtil.e("最终未找到广告的类型");
@@ -676,25 +675,56 @@ public class TopOnAdContentAnalyzer {
         return sendPackageName(platform, adType + adInfo);
     }
 
-    public static String extractTemplateParamValue(String str, String key) {
-        if (str == null || key == null || key.isEmpty()) return "";
+    // {% key %}=value,
+    public static String extractTemplateParamValue(@NotNull String str, @NotNull String key) {
+        if (str.isEmpty() || key.isEmpty()) return "";
+        key = key.trim();
 
-        // 匹配 {%key%}=value 到下一个逗号或结尾
-        // String pattern = "\\{%" + key + "%\\}=([^,]*)";
-        // String pattern = "\\{% " + key + " %\\}=([^,]*)";
-        String pattern = "\\{%\\s*" + key + "\\s*%\\}=([^,]*)";
-        Pattern regex = Pattern.compile(pattern);
+        String pattern = "\\{%\\s*" + Pattern.quote(key) + "\\s*%\\}\\s*=\\s*([^,]*)";
+        Pattern regex = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE); // 忽略大小写
         Matcher matcher = regex.matcher(str);
 
         if (matcher.find()) {
-            return matcher.group(1);
+            return Objects.requireNonNull(matcher.group(1), "未匹配到！").trim();
         }
         return "";
     }
 
-    public static String extractParamFromUrl(String url, String key) {
-        if (url == null || url.isEmpty()) return "";
-        if (key == null || key.isEmpty()) return "";
+    public static String extractRawEncodedValue(@NotNull String str) {
+        try {
+            // 1. 匹配 raw 值
+            Pattern pattern = Pattern.compile("raw=([^&\"]+)");
+            Matcher matcher = pattern.matcher(str);
+
+            String rawEncodedValue = "";
+            if (matcher.find()) rawEncodedValue = matcher.group(1);
+            if (TextUtils.isEmpty(rawEncodedValue)) return "";
+
+            // 2. URL 解码
+            String urlDecoded = URLDecoder.decode(rawEncodedValue, "UTF-8");
+
+            // 3. Base64 解码
+            String base64Decoded = new String(Base64.decode(urlDecoded, 0));
+            LogUtil.d(base64Decoded);
+
+            // 4: 解析 JSON 并提取 storeurl 值
+            JSONObject jsonObject = new JSONObject(base64Decoded);
+            if (jsonObject.has("app")) {
+                JSONObject appObject = jsonObject.getJSONObject("app");
+                if (appObject.has("storeurl")) {
+                    String storeUrl = appObject.getString("storeurl");
+                    return extractParamFromUrl(storeUrl, "id");
+                }
+            }
+        } catch (Exception ignored) {
+        }
+
+        return "";
+    }
+
+    // https://play.google.com/store/apps/details?key=value
+    public static String extractParamFromUrl(@NotNull String url, @NotNull String key) {
+        if (url.isEmpty() || key.isEmpty()) return "";
 
         // 判断是否包含 %xx 形式的编码
         boolean needsDecode = false;
@@ -716,6 +746,80 @@ public class TopOnAdContentAnalyzer {
         String value = uri.getQueryParameter(key);
 
         return value != null ? value : "";
+    }
+
+    // {%adm%}=... -> <div style="display:none" id="adm">...</div> -> "key":"value"
+    private static String extractValueFromDoubleDecodedAdm(String str, String key) {
+        String adInfo = "";
+        try {
+            // {% adm %}=
+            String admValue = extractTemplateParamValue(str, "adm");
+
+            // 解码第一层 Base64
+            String admContent = new String(Base64.decode(admValue, 0));
+            Document doc = Jsoup.parse(admContent);
+            Element admElement = doc.getElementById("adm");
+            if (admElement == null) {
+                // LogUtil.e("未找到 ID 为 'adm' 的元素");
+                return "";
+            }
+            String textContent = admElement.text();
+
+            // 解码第二层 Base64
+            String decodedContent = new String(Base64.decode(textContent, 0));
+            Pattern pattern = Pattern.compile("\"" + Pattern.quote(key) + "\":\"(.*?)\"");
+            Matcher matcher = pattern.matcher(decodedContent);
+            if (!matcher.find()) {
+                LogUtil.e("未在第二层解码后的数据中找到 " + key + " 的值。");
+                return "";
+            }
+
+            String keyValue = matcher.group(1);
+            if ("title".equalsIgnoreCase(key)) {
+                adInfo = keyValue;
+            } else if ("clickUrl".equalsIgnoreCase(key)) {
+                adInfo = extractParamFromUrl(keyValue, "id");
+            }
+
+            return adInfo;
+
+        } catch (Exception e) {
+            LogUtil.e("解析过程中出错: " + e.getMessage());
+            return "";
+        }
+    }
+
+    // &key=value&
+    public static String extractKeyValue(String string, String key) {
+        if (string == null || key == null || key.isEmpty()) {
+            return "";
+        }
+
+        // 构造正则：&key=([^&"\s<]*)
+        String regex = "&" + Pattern.quote(key) + "=([^&\"\\s<]*)";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(string);
+
+        if (matcher.find()) {
+            return matcher.group(1); // 返回第一个匹配到的值
+        }
+
+        return "";
+    }
+
+    // <tagName><![CDATA[value]]></tagName>
+    public static String extractTagCdata(@NotNull String input, @NotNull String tagName) {
+        if (input.isEmpty() || tagName.isEmpty()) return "";
+
+        String regex = "<" + Pattern.quote(tagName) + ">\\s*<!\\[CDATA\\[(.*?)]]>\\s*</" + Pattern.quote(tagName) + ">";
+        Pattern pattern = Pattern.compile(regex, Pattern.DOTALL); // DOTALL: 多行匹配
+        Matcher matcher = pattern.matcher(input);
+
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+
+        return "";
     }
 
     public static boolean getPackageNameE(Object obj, String platform, int loop, int maxLoop) {
@@ -1063,81 +1167,6 @@ public class TopOnAdContentAnalyzer {
 //             e.printStackTrace();
 //         }
 //     }
-
-    private static String extractValueFromDoubleDecodedAdm(String str, String key) {
-        String adInfo = "";
-        try {
-            // {% adm %}=
-            String admValue = extractTemplateParamValue(str, "adm");
-
-            // 解码第一层 Base64
-            String admContent = new String(Base64.decode(admValue, 0));
-            Document doc = Jsoup.parse(admContent);
-            Element admElement = doc.getElementById("adm");
-            if (admElement == null) {
-                LogUtil.e("未找到 ID 为 'adm' 的元素");
-                return "";
-            }
-            String textContent = admElement.text();
-
-            // 解码第二层 Base64
-            String decodedContent = new String(Base64.decode(textContent, 0));
-            Pattern pattern = Pattern.compile("\"" + Pattern.quote(key) + "\":\"(.*?)\"");
-            Matcher matcher = pattern.matcher(decodedContent);
-            if (!matcher.find()) {
-                LogUtil.e("未在第二层解码后的数据中找到 " + key + " 的值。");
-                return "";
-            }
-
-            String keyValue = matcher.group(1);
-            if ("title".equalsIgnoreCase(key)) {
-                adInfo = keyValue;
-            } else if ("clickUrl".equalsIgnoreCase(key)) {
-                adInfo = extractParamFromUrl(keyValue, "id");
-            }
-
-            return adInfo;
-
-        } catch (Exception e) {
-            LogUtil.e("解析过程中出错: " + e.getMessage());
-            return "";
-        }
-    }
-
-    public static String extractKeyValue(String string, String key) {
-        if (string == null || key == null || key.isEmpty()) {
-            return "";
-        }
-
-        // 构造正则：&key=([^&"\s<]*)
-        String regex = "&" + Pattern.quote(key) + "=([^&\"\\s<]*)";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(string);
-
-        if (matcher.find()) {
-            return matcher.group(1); // 返回第一个匹配到的值
-        }
-
-        return "";
-    }
-
-
-    public static String extractTagCdata(String input, String tagName) {
-        if (input == null || input.isEmpty()) return "";
-        if (tagName == null || tagName.isEmpty()) return "";
-
-        // 构造正则：匹配指定标签名的 <![CDATA[...]]> 内容
-        String regex = "<" + Pattern.quote(tagName) + ">\\s*<!\\[CDATA\\[(.*?)]]>\\s*</" + Pattern.quote(tagName) + ">";
-        Pattern pattern = Pattern.compile(regex, Pattern.DOTALL); // DOTALL: 多行匹配
-        Matcher matcher = pattern.matcher(input);
-
-        if (matcher.find()) {
-            return matcher.group(1); // 返回 CDATA 中的内容
-        }
-
-        return "";
-    }
-
 
     public String matchOuterBrackets(String input, char openBracket, char closeBracket) {
         if (input == null || input.isEmpty()) {

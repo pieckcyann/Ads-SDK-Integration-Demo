@@ -7,7 +7,8 @@ import java.util.List;
 public class ReflectUtil {
     private ReflectUtil() {
     }
-
+    
+    // 获取一个对象所属的类以及其所有父类的 Class 列表
     public static ArrayList<Class<?>> getAllClass(Object obj) {
         ArrayList<Class<?>> classes = new ArrayList<>();
         Class<?> clazz = obj.getClass();

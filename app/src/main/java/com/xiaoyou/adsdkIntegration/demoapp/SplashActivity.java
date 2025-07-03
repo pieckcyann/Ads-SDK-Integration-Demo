@@ -1,20 +1,16 @@
 package com.xiaoyou.adsdkIntegration.demoapp;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.xiaoyou.adsdkIntegration.demoapp.ui.TopOnActivity;
-import com.xiaoyou.adsdkIntegration.demoapp.utils.LogUtil;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 应用启动时展示的闪屏页 (Splash Screen)，展示 1 秒后自动跳转到主页面 MainActivity。
@@ -22,29 +18,35 @@ import java.io.InputStreamReader;
 @SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {
 
-    private static String readAssetFileAsString(Context context, String fileName) {
-        AssetManager assetManager = context.getAssets();
-        StringBuilder sb = new StringBuilder();
+    public static String extractTemplateParamValue(String str, String key) {
+        if (str == null || key == null || key.trim().isEmpty()) return "";
+        key = key.trim();
 
-        try (InputStream is = assetManager.open(fileName);
-             BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+        String pattern = "\\{%\\s*" + Pattern.quote(key) + "\\s*%\\}\\s*=\\s*([^,]*)";
+        Pattern regex = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE); // 忽略大小写
+        Matcher matcher = regex.matcher(str);
 
-            String line;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line).append("\n");
-            }
-
-            return sb.toString();
-        } catch (IOException e) {
-            LogUtil.e(e.getMessage());
-            return null;
+        if (matcher.find()) {
+            return Objects.requireNonNull(matcher.group(1), "未匹配到！").trim();
         }
+        return "";
+
+        // int count = 0;
+        // while (matcher.find()) {
+        //     count++;
+        // }
+        // return String.valueOf(count);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
-        // setContentView(R.layout.activity_splash);
+        setContentView(R.layout.activity_splash);
+
+        // String str = readLogFromAssets();
+        // String keyValue = extractTemplateParamValue(str, "is_app");
+        // LogUtil.i("is_app:" + keyValue);
 
         new android.os.Handler().postDelayed(() -> {
             Intent intent = new Intent(SplashActivity.this, TopOnActivity.class);
