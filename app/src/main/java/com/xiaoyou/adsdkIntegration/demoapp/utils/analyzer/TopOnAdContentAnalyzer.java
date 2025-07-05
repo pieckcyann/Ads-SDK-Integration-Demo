@@ -22,11 +22,12 @@ import android.webkit.WebView;
 
 import com.applovin.mediation.MaxAd;
 import com.applovin.sdk.AppLovinSdk;
+import com.cn.util.reflect.ReflectUtil;
 import com.mbridge.msdk.foundation.entity.CampaignEx;
 import com.xiaoyou.adsdkIntegration.demoapp.GlobalApplication;
 import com.xiaoyou.adsdkIntegration.demoapp.utils.FileUtil;
 import com.xiaoyou.adsdkIntegration.demoapp.utils.LogUtil;
-import com.xiaoyou.adsdkIntegration.demoapp.utils.ReflectUtil;
+import com.xiaoyou.adsdkIntegration.demoapp.utils.ReflecxtUtil;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -43,6 +44,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -62,7 +64,7 @@ public class TopOnAdContentAnalyzer {
     private static long sendTime = 0;
 
     public static boolean getTopOnAdContent(Class<?> clazz, Object obj) {
-        List<Object> fieldValues = ReflectUtil.getAllFieldValues(clazz, obj);
+        List<Object> fieldValues = ReflecxtUtil.getAllFieldValues(clazz, obj);
         for (Object fieldValue : fieldValues) {
             String data = fieldValue + "";
 
@@ -621,7 +623,7 @@ public class TopOnAdContentAnalyzer {
                 adInfo = extractParamFromUrl(urlValue, "id");
                 LogUtil.i("尝试 click_through_url " + (!adInfo.isEmpty() ? "成功" : "失败"));
                 if (!adInfo.isEmpty()) break;
-                
+
                 // 尝试找 &pkg_name=
                 adInfo = extractKeyValue(admContent, "pkg_name");
                 LogUtil.i("尝试 pkg_name " + (!adInfo.isEmpty() ? "成功" : "失败"));
@@ -1158,7 +1160,7 @@ public class TopOnAdContentAnalyzer {
 //         Class clazz = null;
 //         try {
 //             clazz = Class.forName("ninja.com.device.faker.manager.LmtServiceManager");
-//             // Object lmtServiceManager = ReflectUtil.invoke(null, clazz, "get", null, null);
+//             Object lmtServiceManager = ReflectUtil.invoke(null, clazz, "get", null, null);
 //             Method putLog = clazz.getDeclaredMethod("putLogMessage", String.class, String.class);
 // //            Method putLog = clazz.getDeclaredMethod("putClientLogMessage", String.class, String.class);
 //             putLog.setAccessible(true);
@@ -1167,6 +1169,19 @@ public class TopOnAdContentAnalyzer {
 //             e.printStackTrace();
 //         }
 //     }
+
+    public static void putLogMessage(String key, String value) {
+        Class clazz = null;
+        try {
+            clazz = Class.forName("ninja.com.device.faker.manager.LmtServiceManager");
+            Object lmtServiceManager = ReflectUtil.invoke(null, clazz, "get", null, null);
+            Method putLog = clazz.getDeclaredMethod("putLogMessage", String.class, String.class);
+            putLog.setAccessible(true);
+            putLog.invoke(lmtServiceManager, key, value);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public String matchOuterBrackets(String input, char openBracket, char closeBracket) {
         if (input == null || input.isEmpty()) {

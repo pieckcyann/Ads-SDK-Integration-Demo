@@ -2,6 +2,10 @@
 
 buildscript {
     repositories {
+        maven {
+            url "http://192.168.2.233:8081/repository/maven-releases/"
+            allowInsecureProtocol = true
+        }
         maven { url 'https://maven.aliyun.com/repository/central' }
         maven { url 'https://maven.aliyun.com/repository/google' }
         maven { url 'https://maven.aliyun.com/repository/jcenter' }
@@ -18,6 +22,11 @@ buildscript {
 
 allprojects {
     repositories {
+        maven {
+            url "http://192.168.2.233:8081/repository/maven-releases/"
+            allowInsecureProtocol = true
+        }
+        
         maven { url 'https://maven.aliyun.com/repository/central' }
         maven { url 'https://maven.aliyun.com/repository/google' }
         maven { url 'https://maven.aliyun.com/repository/jcenter' }

@@ -41,7 +41,11 @@ public class GlobalApplication extends Application {
         super.onCreate();
         instance = this;
 
-        IntentFilter filter = new IntentFilter("com.xiaoyou.action.DUMP_INFO");
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("com.xiaoyou.action.DUMP_INFO");
+        filter.addAction("dumpInfo");
+        filter.addAction("dumpAdMarketUrl");
+
         DebugInfoReceiver receiver = new DebugInfoReceiver();
         ContextCompat.registerReceiver(this, receiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED);
 

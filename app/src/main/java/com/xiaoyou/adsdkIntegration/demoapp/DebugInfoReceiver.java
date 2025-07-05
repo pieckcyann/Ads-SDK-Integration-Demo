@@ -1,5 +1,7 @@
 package com.xiaoyou.adsdkIntegration.demoapp;
 
+import static com.xiaoyou.adsdkIntegration.demoapp.utils.analyzer.TopOnAdContentAnalyzer.putLogMessage;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -17,8 +19,9 @@ public class DebugInfoReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        String action = intent.getAction();
         // 判断 action
-        if ("com.xiaoyou.action.DUMP_INFO".equals(intent.getAction())) {
+        if ("com.xiaoyou.action.DUMP_INFO".equals(action)) {
             LogUtil.d("DumpInfoReceiver", "dumpInfo action received");
 
             // 获取当前显示的 Activity 实例
@@ -69,6 +72,14 @@ public class DebugInfoReceiver extends BroadcastReceiver {
             }).start();
 
 
+        }
+
+        if ("dumpInfo".equals(action)) {
+            int maxLoop = intent.getIntExtra("maxLoop", 5);
+            putLogMessage("dumpInfo", String.valueOf(maxLoop));
+        }
+        if ("dumpAdMarketUrl".equals(action)) {
+            putLogMessage("dumpAdMarketUrl", "dumpAdMarketUrl");
         }
     }
 }

@@ -7,6 +7,8 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.xiaoyou.adsdkIntegration.demoapp.ui.TopOnActivity;
+import com.xiaoyou.adsdkIntegration.demoapp.utils.LogUtil;
+import com.xiaoyou.adsdkIntegration.demoapp.utils.analyzer.TopOnAdContentAnalyzer;
 
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -44,9 +46,9 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        // String str = readLogFromAssets();
-        // String keyValue = extractTemplateParamValue(str, "is_app");
-        // LogUtil.i("is_app:" + keyValue);
+        String str = TopOnAdContentAnalyzer.readLogFromAssets();
+        String keyValue = extractTemplateParamValue(str, "is_app");
+        LogUtil.i("is_app:" + keyValue);
 
         new android.os.Handler().postDelayed(() -> {
             Intent intent = new Intent(SplashActivity.this, TopOnActivity.class);

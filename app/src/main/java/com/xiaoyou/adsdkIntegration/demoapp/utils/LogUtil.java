@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class LogUtil {
 
-    private static String TAG = "Hookad";
+    private static String TAG = "CyuHookAd";
 
     public static void e(String msg) {
         e(TAG, msg);

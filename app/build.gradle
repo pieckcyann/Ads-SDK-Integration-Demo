@@ -9,7 +9,8 @@ android {
     defaultConfig {
         // applicationId "com.mahjong.solitaire.tile.pair.match"
 
-        applicationId "jp.co.goodroid.hyper.balljumper"
+        // applicationId "jp.co.goodroid.hyper.balljumper"
+        applicationId "org.mozilla.firefox"
         minSdkVersion 24
         targetSdk 34
         versionCode 1
@@ -107,6 +108,7 @@ dependencies {
 
 
     /* TopOn */
+    api 'lib.winter.com:cnutil:1.4.3'
     // Anythink (Necessary)
     api "com.anythink.sdk:core-tpn:6.4.69"
     api "com.anythink.sdk:nativead-tpn:6.4.69"

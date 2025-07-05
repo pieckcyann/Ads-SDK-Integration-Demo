@@ -2,7 +2,7 @@ package com.xiaoyou.adsdkIntegration.demoapp.utils.analyzer;
 
 import android.text.TextUtils;
 
-import com.xiaoyou.adsdkIntegration.demoapp.utils.ReflectUtil;
+import com.xiaoyou.adsdkIntegration.demoapp.utils.ReflecxtUtil;
 
 import java.util.ArrayList;
 
@@ -13,7 +13,7 @@ public class AdContentAnalyzer {
 
             String name = obj.getClass().getName();
             if (TextUtils.isEmpty(name)) return;
-            ArrayList<Class<?>> classes = ReflectUtil.getAllClass(obj);
+            ArrayList<Class<?>> classes = ReflecxtUtil.getAllClass(obj);
 
             for (Class<?> clazz : classes) {
                 if (name.contains("com.applovin.") && MAXAdContentAnalyzer.getMaxAdContent(clazz, obj)) {
